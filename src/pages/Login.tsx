@@ -128,8 +128,19 @@ export default function Login() {
   const [regPassword, setRegPassword] = useState('')
   const [regPassword2, setRegPassword2] = useState('')
   const [regSucursalId, setRegSucursalId] = useState('')
-  const [sucursales, setSucursales] = useState<{ id: string; nombre: string }[]>([])
-  const [sucursalesLoaded, setSucursalesLoaded] = useState(false)
+  // Lista estática de sucursales como base; se sobreescribe con datos reales de Supabase
+  const SUCURSALES_DEFAULT = [
+    'Sumefra',
+    'Anubis Aguascalientes',
+    'Anubis Centro',
+    'Anubis Galerías',
+    'Anubis Sahuaro Grande',
+    'Anubis Sahuaro Chico',
+    'M&P Galerías',
+  ]
+  const [sucursales, setSucursales] = useState<{ id: string; nombre: string }[]>(
+    SUCURSALES_DEFAULT.map(n => ({ id: n, nombre: n }))
+  )
 
   // Common state
   const [error, setError] = useState<string | null>(null)
@@ -137,14 +148,16 @@ export default function Login() {
   const [loading, setLoading] = useState(false)
 
   async function loadSucursales() {
-    if (sucursalesLoaded) return
-    const { data } = await supabase
-      .from('sucursales')
-      .select('id, nombre')
-      .eq('activo', true)
-      .order('nombre')
-    setSucursales(data ?? [])
-    setSucursalesLoaded(true)
+    try {
+      const { data } = await supabase
+        .from('sucursales')
+        .select('id, nombre')
+        .eq('activo', true)
+        .order('nombre')
+      if (data && data.length > 0) setSucursales(data)
+    } catch {
+      // Si falla, se mantiene la lista estática predefinida
+    }
   }
 
   function switchMode(m: Mode) {
