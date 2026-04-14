@@ -2,38 +2,38 @@
 @import "tailwindcss";
 
 /* ============================================================
-   SUMEFRA OS — Design System v2
-   Paleta: fondo #06060F, cards #111120, dorado #C9992A, texto #E8E8F2
+   SUMEFRA OS — Design System v3  (Luxury Light)
+   Paleta: crema #F7F4EF, cards blanco, dorado #A8780E, texto #1E1810
    Tipografía: Cormorant Garamond (títulos) + Montserrat (cuerpo)
    ============================================================ */
 
 /* ── Variables ─────────────────────────────────────────── */
 :root {
-  --bg:          #06060F;
-  --bg-mid:      #0C0C1A;
-  --card:        #111120;
-  --card-hover:  #181830;
-  --card-raised: #1A1A2E;
-  --border:      #232338;
-  --border-light:#323250;
-  --gold:        #C9992A;
-  --gold-light:  #E0B84A;
-  --gold-dim:    #6A4D12;
-  --gold-glow:   rgba(201,153,42,0.18);
-  --text:        #E8E8F2;
-  --text-muted:  #8A8AA8;
-  --text-dim:    #505070;
-  --positive:    #4CAF6E;
-  --negative:    #E05555;
-  --warning:     #E0A030;
-  --info:        #4A9EE0;
+  --bg:          #F7F4EF;
+  --bg-mid:      #EDE8DE;
+  --card:        #FFFFFF;
+  --card-hover:  #FAF8F5;
+  --card-raised: #FFFFFF;
+  --border:      #E0D8CC;
+  --border-light:#EDE8E0;
+  --gold:        #A8780E;
+  --gold-light:  #C49020;
+  --gold-dim:    #E8D5A8;
+  --gold-glow:   rgba(168,120,14,0.10);
+  --text:        #1E1810;
+  --text-muted:  #6A5840;
+  --text-dim:    #A89878;
+  --positive:    #1E7A45;
+  --negative:    #B02828;
+  --warning:     #A06010;
+  --info:        #1560A0;
   --sidebar-w:   230px;
   --topbar-h:    60px;
   --radius:      12px;
   --radius-sm:   8px;
   --radius-xs:   5px;
-  --shadow:      0 4px 24px rgba(0,0,0,0.5);
-  --shadow-lg:   0 16px 48px rgba(0,0,0,0.7);
+  --shadow:      0 2px 8px rgba(80,50,20,0.08), 0 1px 2px rgba(80,50,20,0.04);
+  --shadow-lg:   0 8px 32px rgba(80,50,20,0.12), 0 2px 8px rgba(80,50,20,0.06);
   --transition:  150ms ease;
 }
 
@@ -190,7 +190,7 @@ input[type="number"]::-webkit-inner-spin-button { opacity: 0.4; }
 }
 
 .sidebar-item:hover {
-  background: rgba(255,255,255,0.04);
+  background: rgba(0,0,0,0.04);
   color: var(--text);
 }
 
@@ -287,14 +287,14 @@ input[type="number"]::-webkit-inner-spin-button { opacity: 0.4; }
 
 .topbar-avatar {
   width: 32px; height: 32px;
-  background: linear-gradient(135deg, var(--gold-dim), var(--gold));
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
   font-size: 12px;
-  color: #06060F;
+  color: #FFFFFF;
   flex-shrink: 0;
 }
 
@@ -339,10 +339,10 @@ input[type="number"]::-webkit-inner-spin-button { opacity: 0.4; }
   align-items: center;
   justify-content: center;
   background:
-    radial-gradient(ellipse 120% 80% at 70% 50%, #080F2A 0%, transparent 55%),
-    radial-gradient(ellipse 80% 100% at 20% 30%, #120A02 0%, transparent 60%),
-    radial-gradient(ellipse 100% 60% at 50% 100%, #04080F 0%, transparent 60%),
-    #050610;
+    radial-gradient(ellipse 90% 70% at 75% 50%,  rgba(201,153,42,0.09) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 90% at 20% 30%,  rgba(201,153,42,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 50% 100%, rgba(168,120,14,0.05) 0%, transparent 60%),
+    #F7F4EF;
   overflow: hidden;
   position: relative;
 }
@@ -359,35 +359,32 @@ input[type="number"]::-webkit-inner-spin-button { opacity: 0.4; }
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse 60% 50% at 75% 50%,  rgba(201,153,42,0.12) 0%, transparent 55%),
-    radial-gradient(ellipse 50% 40% at 15% 15%,  rgba(201,153,42,0.09) 0%, transparent 55%),
-    radial-gradient(ellipse 40% 60% at 88% 85%,  rgba(201,153,42,0.07) 0%, transparent 55%),
-    radial-gradient(ellipse 50% 40% at 35% 70%,  rgba(40,80,200,0.06)  0%, transparent 55%),
-    radial-gradient(ellipse 30% 30% at 60% 20%,  rgba(80,140,230,0.04) 0%, transparent 50%);
+    radial-gradient(ellipse 60% 50% at 75% 50%, rgba(201,153,42,0.08) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 50% at 15% 20%, rgba(201,153,42,0.05) 0%, transparent 55%);
 }
 
-/* ── Big background diamond ──────────────────────────────── */
+/* ── Big background diamond (realistic) ─────────────────── */
 .login-diamond-bg {
   position: absolute;
-  width: clamp(320px, 58vmin, 620px);
-  height: clamp(360px, 65vmin, 700px);
+  width: clamp(300px, 52vmin, 580px);
+  height: clamp(340px, 59vmin, 660px);
   top: 50%;
-  right: 2%;
-  transform: translateY(-50%) rotate(-4deg);
-  animation: bigDiamondAnim 10s ease-in-out infinite alternate;
+  right: 3%;
+  transform: translateY(-50%) rotate(-3deg);
+  animation: bigDiamondAnim 12s ease-in-out infinite alternate;
   pointer-events: none;
   z-index: 1;
 }
 
 @keyframes bigDiamondAnim {
   0%   {
-    transform: translateY(-50%) rotate(-4deg) scale(0.97);
-    filter: drop-shadow(0 0 30px rgba(201,153,42,0.25)) drop-shadow(0 0 80px rgba(201,153,42,0.10));
-    opacity: 0.75;
+    transform: translateY(-50%) rotate(-3deg) scale(0.98);
+    filter: drop-shadow(0 12px 40px rgba(100,160,240,0.30)) drop-shadow(0 0 80px rgba(168,120,14,0.12));
+    opacity: 0.82;
   }
   100% {
-    transform: translateY(-50%) rotate(4deg) scale(1.03);
-    filter: drop-shadow(0 0 60px rgba(201,153,42,0.45)) drop-shadow(0 0 140px rgba(201,153,42,0.20));
+    transform: translateY(-50%) rotate(3deg) scale(1.02);
+    filter: drop-shadow(0 12px 60px rgba(100,160,240,0.45)) drop-shadow(0 0 120px rgba(168,120,14,0.20));
     opacity: 1;
   }
 }
@@ -397,14 +394,14 @@ input[type="number"]::-webkit-inner-spin-button { opacity: 0.4; }
   position: absolute;
   inset: 0;
   background-image:
-    radial-gradient(circle 1px at 20% 30%, rgba(201,153,42,0.5) 0%, transparent 1px),
-    radial-gradient(circle 1px at 45% 15%, rgba(201,153,42,0.4) 0%, transparent 1px),
-    radial-gradient(circle 1px at 70% 55%, rgba(201,153,42,0.5) 0%, transparent 1px),
-    radial-gradient(circle 1px at 85% 25%, rgba(201,153,42,0.3) 0%, transparent 1px),
-    radial-gradient(circle 1px at 12% 75%, rgba(201,153,42,0.4) 0%, transparent 1px),
-    radial-gradient(circle 1px at 60% 80%, rgba(201,153,42,0.3) 0%, transparent 1px),
-    radial-gradient(circle 1px at 35% 90%, rgba(201,153,42,0.4) 0%, transparent 1px),
-    radial-gradient(circle 1px at 90% 65%, rgba(201,153,42,0.3) 0%, transparent 1px);
+    radial-gradient(circle 1.5px at 20% 30%, rgba(168,120,14,0.35) 0%, transparent 1.5px),
+    radial-gradient(circle 1px  at 45% 15%, rgba(168,120,14,0.28) 0%, transparent 1px),
+    radial-gradient(circle 1.5px at 70% 55%, rgba(168,120,14,0.35) 0%, transparent 1.5px),
+    radial-gradient(circle 1px  at 85% 25%, rgba(168,120,14,0.22) 0%, transparent 1px),
+    radial-gradient(circle 1px  at 12% 75%, rgba(168,120,14,0.28) 0%, transparent 1px),
+    radial-gradient(circle 1px  at 60% 80%, rgba(168,120,14,0.22) 0%, transparent 1px),
+    radial-gradient(circle 1px  at 35% 90%, rgba(168,120,14,0.28) 0%, transparent 1px),
+    radial-gradient(circle 1px  at 90% 65%, rgba(168,120,14,0.22) 0%, transparent 1px);
   animation: dustPulse 8s ease-in-out infinite alternate;
 }
 
@@ -437,18 +434,18 @@ input[type="number"]::-webkit-inner-spin-button { opacity: 0.4; }
 .gem-diamond {
   clip-path: polygon(50% 0%, 100% 32%, 82% 100%, 18% 100%, 0% 32%);
   background: linear-gradient(145deg,
-    rgba(201,153,42,0.35) 0%,
-    rgba(224,184,74,0.15) 50%,
-    rgba(201,153,42,0.05) 100%);
-  border: 1px solid rgba(201,153,42,0.4);
-  filter: drop-shadow(0 0 6px rgba(201,153,42,0.2));
+    rgba(168,120,14,0.28) 0%,
+    rgba(196,144,32,0.12) 50%,
+    rgba(168,120,14,0.04) 100%);
+  border: 1px solid rgba(168,120,14,0.35);
+  filter: drop-shadow(0 0 6px rgba(168,120,14,0.15));
 }
 
 .gem-ring {
   border-radius: 50%;
-  border: 1.5px solid rgba(201,153,42,0.25);
+  border: 1.5px solid rgba(168,120,14,0.20);
   background: transparent;
-  box-shadow: 0 0 12px rgba(201,153,42,0.08), inset 0 0 8px rgba(201,153,42,0.04);
+  box-shadow: 0 0 10px rgba(168,120,14,0.06), inset 0 0 6px rgba(168,120,14,0.03);
 }
 
 /* Positions & delays */
@@ -498,21 +495,19 @@ input[type="number"]::-webkit-inner-spin-button { opacity: 0.4; }
 
 .login-card {
   width: 100%;
-  background: linear-gradient(155deg, #0D1B3E 0%, #0A1428 45%, #0E1B38 100%);
-  border: 1px solid rgba(201,153,42,0.28);
+  background: #FFFFFF;
+  border: 1px solid rgba(168,120,14,0.22);
   border-radius: 24px;
   padding: 48px 44px 40px;
   box-shadow:
-    0 32px 80px rgba(0,0,0,0.65),
-    0 0 0 1px rgba(201,153,42,0.10),
-    0 0 60px rgba(20,50,120,0.15),
-    inset 0 1px 0 rgba(201,153,42,0.12);
-  backdrop-filter: blur(20px);
+    0 20px 60px rgba(80,50,20,0.12),
+    0 4px 16px rgba(80,50,20,0.08),
+    0 0 0 1px rgba(168,120,14,0.06);
   position: relative;
   overflow: hidden;
 }
 
-/* Shimmer sweep on card */
+/* Subtle shimmer sweep on card */
 .login-card::before {
   content: '';
   position: absolute;
@@ -523,12 +518,12 @@ input[type="number"]::-webkit-inner-spin-button { opacity: 0.4; }
   background: linear-gradient(
     105deg,
     transparent 0%,
-    rgba(201,153,42,0.04) 40%,
-    rgba(201,153,42,0.07) 50%,
-    rgba(201,153,42,0.04) 60%,
+    rgba(168,120,14,0.03) 40%,
+    rgba(168,120,14,0.06) 50%,
+    rgba(168,120,14,0.03) 60%,
     transparent 100%
   );
-  animation: cardSweep 8s ease-in-out infinite;
+  animation: cardSweep 10s ease-in-out infinite;
   pointer-events: none;
 }
 
@@ -559,7 +554,7 @@ input[type="number"]::-webkit-inner-spin-button { opacity: 0.4; }
   inset: -4px;
   border-radius: 20px;
   border: 1px solid transparent;
-  background: linear-gradient(135deg, rgba(201,153,42,0.6), transparent, rgba(201,153,42,0.3)) border-box;
+  background: linear-gradient(135deg, rgba(168,120,14,0.55), transparent, rgba(168,120,14,0.28)) border-box;
   -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: destination-out;
   mask-composite: exclude;
@@ -569,7 +564,7 @@ input[type="number"]::-webkit-inner-spin-button { opacity: 0.4; }
 .login-logo-ring::after {
   inset: -8px;
   border-radius: 24px;
-  border-color: rgba(201,153,42,0.15);
+  border-color: rgba(168,120,14,0.12);
   animation-duration: 10s;
   animation-direction: reverse;
 }
@@ -584,13 +579,13 @@ input[type="number"]::-webkit-inner-spin-button { opacity: 0.4; }
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(145deg, #1C1708, #2A2010);
-  border: 1px solid rgba(201,153,42,0.35);
+  background: linear-gradient(145deg, #FBF5E8, #F2E8D0);
+  border: 1px solid rgba(168,120,14,0.35);
   border-radius: 20px;
   box-shadow:
-    0 12px 32px rgba(0,0,0,0.5),
-    0 0 24px rgba(201,153,42,0.15),
-    inset 0 1px 0 rgba(201,153,42,0.15);
+    0 8px 24px rgba(80,50,20,0.12),
+    0 0 20px rgba(168,120,14,0.10),
+    inset 0 1px 0 rgba(255,255,255,0.9);
 }
 
 .login-title {
@@ -614,8 +609,8 @@ input[type="number"]::-webkit-inner-spin-button { opacity: 0.4; }
 /* Tabs */
 .login-tabs {
   display: flex;
-  background: rgba(0,0,0,0.3);
-  border: 1px solid var(--border);
+  background: rgba(0,0,0,0.04);
+  border: 1px solid rgba(0,0,0,0.08);
   border-radius: var(--radius-sm);
   padding: 3px;
   gap: 2px;
@@ -629,19 +624,20 @@ input[type="number"]::-webkit-inner-spin-button { opacity: 0.4; }
   font-weight: 500;
   border-radius: 6px;
   background: transparent;
-  color: var(--text-muted);
+  color: #7A6048;
   transition: all 200ms ease;
   border: none;
+  cursor: pointer;
 }
 
 .login-tab:hover { color: var(--text); }
 
 .login-tab--active {
-  background: linear-gradient(135deg, rgba(201,153,42,0.15), rgba(201,153,42,0.08));
+  background: linear-gradient(135deg, rgba(168,120,14,0.12), rgba(168,120,14,0.06));
   color: var(--gold);
   font-weight: 600;
-  border: 1px solid rgba(201,153,42,0.2);
-  box-shadow: 0 1px 6px rgba(0,0,0,0.4);
+  border: 1px solid rgba(168,120,14,0.18);
+  box-shadow: 0 1px 4px rgba(80,50,20,0.10);
 }
 
 .login-form {
@@ -791,7 +787,7 @@ select.field-input option {
 /* ── Buttons ─────────────────────────────────────────────── */
 .btn-primary {
   background: linear-gradient(135deg, var(--gold), var(--gold-light));
-  color: #06060F;
+  color: #FFFFFF;
   border-radius: var(--radius-xs);
   padding: 11px 22px;
   font-weight: 700;
@@ -1090,11 +1086,11 @@ select.filtro-input option { background: var(--card); color: var(--text); }
 }
 
 .tabla-fila {
-  border-bottom: 1px solid rgba(35,35,56,0.7);
+  border-bottom: 1px solid var(--border);
   transition: background 0.1s;
 }
 .tabla-fila:last-child { border-bottom: none; }
-.tabla-fila:hover { background: rgba(255,255,255,0.02); }
+.tabla-fila:hover { background: rgba(168,120,14,0.04); }
 
 .tabla-celda {
   padding: 10px 14px;
@@ -1319,7 +1315,7 @@ select.filtro-input option { background: var(--card); color: var(--text); }
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(6,6,15,0.8);
+  background: rgba(30,24,16,0.55);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;

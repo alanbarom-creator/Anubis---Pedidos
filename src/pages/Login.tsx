@@ -17,69 +17,133 @@ function CrownDiamond() {
   )
 }
 
-// ── Large background diamond ───────────────────────────────
+// ── Realistic faceted diamond (photorealistic gradients) ───
 function BigDiamondBg() {
   return (
     <div className="login-diamond-bg" aria-hidden="true">
       <svg viewBox="0 0 300 340" fill="none" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
-        {/* Outer diamond outline */}
-        <polygon points="150,4 296,130 150,336 4,130"
-          stroke="rgba(201,153,42,0.55)" strokeWidth="1.2" fill="none"/>
-        {/* Inner table octagon */}
-        <polygon points="150,38 210,63 242,130 210,197 150,222 90,197 58,130 90,63"
-          stroke="rgba(224,184,74,0.45)" strokeWidth="0.8" fill="rgba(201,153,42,0.03)"/>
-        {/* Top star facet */}
-        <polygon points="150,4 90,63 150,38 210,63"
-          stroke="rgba(201,153,42,0.3)" strokeWidth="0.6" fill="rgba(224,184,74,0.05)"/>
-        {/* Right-top facet */}
-        <polygon points="296,130 210,63 242,130"
-          stroke="rgba(201,153,42,0.3)" strokeWidth="0.6" fill="rgba(201,153,42,0.03)"/>
-        {/* Right-bottom facet */}
-        <polygon points="296,130 242,130 210,197"
-          stroke="rgba(201,153,42,0.3)" strokeWidth="0.6" fill="rgba(224,184,74,0.04)"/>
-        {/* Bottom star facet */}
-        <polygon points="150,336 210,197 150,222 90,197"
-          stroke="rgba(201,153,42,0.3)" strokeWidth="0.6" fill="rgba(201,153,42,0.04)"/>
-        {/* Left-bottom facet */}
-        <polygon points="4,130 90,197 58,130"
-          stroke="rgba(201,153,42,0.3)" strokeWidth="0.6" fill="rgba(201,153,42,0.03)"/>
-        {/* Left-top facet */}
-        <polygon points="4,130 58,130 90,63"
-          stroke="rgba(201,153,42,0.3)" strokeWidth="0.6" fill="rgba(224,184,74,0.04)"/>
-        {/* Upper-left kite */}
-        <polygon points="150,4 4,130 90,63"
-          stroke="rgba(201,153,42,0.22)" strokeWidth="0.5" fill="rgba(201,153,42,0.015)"/>
-        {/* Upper-right kite */}
-        <polygon points="150,4 296,130 210,63"
-          stroke="rgba(201,153,42,0.22)" strokeWidth="0.5" fill="rgba(201,153,42,0.015)"/>
-        {/* Lower-left kite */}
-        <polygon points="150,336 4,130 90,197"
-          stroke="rgba(201,153,42,0.22)" strokeWidth="0.5" fill="rgba(201,153,42,0.015)"/>
-        {/* Lower-right kite */}
-        <polygon points="150,336 296,130 210,197"
-          stroke="rgba(201,153,42,0.22)" strokeWidth="0.5" fill="rgba(201,153,42,0.015)"/>
-        {/* Center light rays */}
-        <line x1="150" y1="38"  x2="150" y2="222" stroke="rgba(224,184,74,0.15)" strokeWidth="0.5"/>
-        <line x1="58"  y1="130" x2="242" y2="130" stroke="rgba(224,184,74,0.15)" strokeWidth="0.5"/>
-        <line x1="90"  y1="63"  x2="210" y2="197" stroke="rgba(201,153,42,0.1)"  strokeWidth="0.4"/>
-        <line x1="210" y1="63"  x2="90"  y2="197" stroke="rgba(201,153,42,0.1)"  strokeWidth="0.4"/>
-        {/* Center gem dot */}
-        <circle cx="150" cy="130" r="4" fill="rgba(255,215,80,0.5)"/>
-        <circle cx="150" cy="130" r="8" stroke="rgba(224,184,74,0.2)" strokeWidth="0.5" fill="none"/>
-        {/* Top sparkle star */}
-        <line x1="150" y1="-6"  x2="150" y2="16"  stroke="rgba(255,220,80,0.95)" strokeWidth="2"/>
-        <line x1="136" y1="4"   x2="164" y2="4"   stroke="rgba(255,220,80,0.95)" strokeWidth="2"/>
-        <line x1="142" y1="-3"  x2="158" y2="11"  stroke="rgba(255,220,80,0.55)" strokeWidth="1"/>
-        <line x1="158" y1="-3"  x2="142" y2="11"  stroke="rgba(255,220,80,0.55)" strokeWidth="1"/>
-        {/* Right sparkle */}
-        <line x1="304" y1="130" x2="288" y2="130" stroke="rgba(255,220,80,0.5)" strokeWidth="1.5"/>
-        <line x1="296" y1="122" x2="296" y2="138" stroke="rgba(255,220,80,0.5)" strokeWidth="1.5"/>
-        {/* Left sparkle */}
-        <line x1="-4"  y1="130" x2="12"  y2="130" stroke="rgba(255,220,80,0.4)" strokeWidth="1"/>
-        <line x1="4"   y1="122" x2="4"   y2="138" stroke="rgba(255,220,80,0.4)" strokeWidth="1"/>
-        {/* Bottom sparkle */}
-        <line x1="150" y1="344" x2="150" y2="328" stroke="rgba(255,220,80,0.4)" strokeWidth="1"/>
-        <line x1="142" y1="336" x2="158" y2="336" stroke="rgba(255,220,80,0.4)" strokeWidth="1"/>
+        <defs>
+          {/* Table — bright center */}
+          <radialGradient id="gTbl" cx="50%" cy="38%" r="62%">
+            <stop offset="0%"   stopColor="#FFFFFF"  stopOpacity="0.98"/>
+            <stop offset="35%"  stopColor="#E8F5FF"  stopOpacity="0.95"/>
+            <stop offset="100%" stopColor="#A8D4F8"  stopOpacity="0.85"/>
+          </radialGradient>
+          {/* Crown top-left — icy blue */}
+          <linearGradient id="gCtl" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%"   stopColor="#FFFFFF"  stopOpacity="0.92"/>
+            <stop offset="55%"  stopColor="#C0E4FF"  stopOpacity="0.78"/>
+            <stop offset="100%" stopColor="#70B0F0"  stopOpacity="0.62"/>
+          </linearGradient>
+          {/* Crown top-right — brightest (main light) */}
+          <linearGradient id="gCtr" x1="1" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stopColor="#FFFFFF"  stopOpacity="0.96"/>
+            <stop offset="50%"  stopColor="#D8EEFF"  stopOpacity="0.88"/>
+            <stop offset="100%" stopColor="#92C6F8"  stopOpacity="0.72"/>
+          </linearGradient>
+          {/* Crown left */}
+          <linearGradient id="gCl" x1="0" y1="0.5" x2="1" y2="0.5">
+            <stop offset="0%"   stopColor="#80B8F0"  stopOpacity="0.72"/>
+            <stop offset="100%" stopColor="#B8DCFF"  stopOpacity="0.78"/>
+          </linearGradient>
+          {/* Crown right */}
+          <linearGradient id="gCr" x1="1" y1="0.5" x2="0" y2="0.5">
+            <stop offset="0%"   stopColor="#E4F2FF"  stopOpacity="0.90"/>
+            <stop offset="100%" stopColor="#A4CCFF"  stopOpacity="0.76"/>
+          </linearGradient>
+          {/* Pavilion left — deep blue */}
+          <linearGradient id="gPl" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%"   stopColor="#3870B8"  stopOpacity="0.58"/>
+            <stop offset="50%"  stopColor="#1A4898"  stopOpacity="0.72"/>
+            <stop offset="100%" stopColor="#060E20"  stopOpacity="0.92"/>
+          </linearGradient>
+          {/* Pavilion right */}
+          <linearGradient id="gPr" x1="1" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stopColor="#4880C8"  stopOpacity="0.55"/>
+            <stop offset="50%"  stopColor="#2258A8"  stopOpacity="0.68"/>
+            <stop offset="100%" stopColor="#0C1C3C"  stopOpacity="0.90"/>
+          </linearGradient>
+          {/* Pavilion bottom — darkest */}
+          <linearGradient id="gPb" x1="0.5" y1="0" x2="0.5" y2="1">
+            <stop offset="0%"   stopColor="#163060"  stopOpacity="0.72"/>
+            <stop offset="100%" stopColor="#010204"  stopOpacity="0.98"/>
+          </linearGradient>
+          {/* Specular highlight */}
+          <radialGradient id="gSp1" cx="32%" cy="22%" r="48%">
+            <stop offset="0%"   stopColor="#FFFFFF"  stopOpacity="0.88"/>
+            <stop offset="45%"  stopColor="#FFFFFF"  stopOpacity="0.22"/>
+            <stop offset="100%" stopColor="#FFFFFF"  stopOpacity="0"/>
+          </radialGradient>
+          {/* Secondary highlight */}
+          <radialGradient id="gSp2" cx="68%" cy="38%" r="28%">
+            <stop offset="0%"   stopColor="#FFFFFF"  stopOpacity="0.52"/>
+            <stop offset="100%" stopColor="#FFFFFF"  stopOpacity="0"/>
+          </radialGradient>
+          {/* Ambient glow */}
+          <radialGradient id="gGlow" cx="50%" cy="44%" r="55%">
+            <stop offset="0%"   stopColor="#C0E0FF"  stopOpacity="0.22"/>
+            <stop offset="100%" stopColor="transparent" stopOpacity="0"/>
+          </radialGradient>
+          {/* Drop shadow */}
+          <filter id="fDrop" x="-25%" y="-15%" width="150%" height="150%">
+            <feDropShadow dx="0" dy="14" stdDeviation="18" floodColor="#4090C8" floodOpacity="0.38"/>
+          </filter>
+        </defs>
+
+        {/* Soft ambient glow */}
+        <ellipse cx="150" cy="162" rx="148" ry="118" fill="url(#gGlow)"/>
+
+        <g filter="url(#fDrop)">
+          {/* ── CROWN (upper half) ── */}
+          <polygon points="150,5 5,148 98,62"    fill="url(#gCtl)" stroke="rgba(190,225,255,0.32)" strokeWidth="0.6"/>
+          <polygon points="150,5 295,148 202,62"  fill="url(#gCtr)" stroke="rgba(200,230,255,0.24)" strokeWidth="0.6"/>
+          <polygon points="150,5 98,62 150,42"    fill="rgba(255,255,255,0.90)" stroke="rgba(210,235,255,0.42)" strokeWidth="0.5"/>
+          <polygon points="150,5 202,62 150,42"   fill="rgba(255,255,255,0.96)" stroke="rgba(255,255,255,0.50)" strokeWidth="0.5"/>
+          <polygon points="5,148 98,62 78,148"    fill="url(#gCl)"  stroke="rgba(175,215,255,0.28)" strokeWidth="0.5"/>
+          <polygon points="295,148 202,62 222,148" fill="url(#gCr)" stroke="rgba(195,225,255,0.28)" strokeWidth="0.5"/>
+
+          {/* ── TABLE (center octagon) ── */}
+          <polygon points="150,42 202,62 222,148 202,234 150,254 98,234 78,148 98,62"
+            fill="url(#gTbl)" stroke="rgba(255,255,255,0.65)" strokeWidth="0.9"/>
+
+          {/* ── PAVILION (lower half) ── */}
+          <polygon points="5,148 78,148 98,234 150,330"   fill="url(#gPl)" stroke="rgba(55,95,175,0.32)" strokeWidth="0.5"/>
+          <polygon points="295,148 222,148 202,234 150,330" fill="url(#gPr)" stroke="rgba(55,95,175,0.28)" strokeWidth="0.5"/>
+          <polygon points="150,330 5,148 78,148"           fill="rgba(12,26,56,0.70)"  stroke="rgba(45,80,160,0.28)" strokeWidth="0.5"/>
+          <polygon points="150,330 295,148 222,148"         fill="rgba(16,36,72,0.66)"  stroke="rgba(45,80,160,0.24)" strokeWidth="0.5"/>
+          <polygon points="150,330 98,234 150,254 202,234"  fill="url(#gPb)" stroke="rgba(38,66,138,0.32)" strokeWidth="0.5"/>
+
+          {/* Outer outline */}
+          <polygon points="150,5 295,148 150,330 5,148" fill="none" stroke="rgba(180,220,255,0.48)" strokeWidth="1.2"/>
+          {/* Girdle */}
+          <line x1="5" y1="148" x2="295" y2="148" stroke="rgba(210,235,255,0.38)" strokeWidth="1"/>
+
+          {/* Fire (prismatic dispersal — very subtle) */}
+          <polygon points="150,5 98,62 78,148"    fill="rgba(255,70,50,0.055)"/>
+          <polygon points="295,148 202,62 222,148" fill="rgba(50,255,70,0.045)"/>
+          <polygon points="5,148 78,148 98,234"    fill="rgba(50,70,255,0.060)"/>
+          <polygon points="150,330 202,234 295,148" fill="rgba(255,200,50,0.045)"/>
+
+          {/* Specular highlights */}
+          <polygon points="150,5 295,148 150,330 5,148" fill="url(#gSp1)"/>
+          <polygon points="150,5 295,148 150,330 5,148" fill="url(#gSp2)"/>
+        </g>
+
+        {/* ── SPARKLE STARS ── */}
+        {/* Top — brightest */}
+        <line x1="150" y1="-10" x2="150" y2="22"  stroke="#FFFFFF" strokeWidth="2.8" strokeLinecap="round"/>
+        <line x1="130" y1="6"   x2="170" y2="6"   stroke="#FFFFFF" strokeWidth="2.8" strokeLinecap="round"/>
+        <line x1="138" y1="-6"  x2="162" y2="18"  stroke="#FFFFFF" strokeWidth="1.2" strokeLinecap="round" opacity="0.65"/>
+        <line x1="162" y1="-6"  x2="138" y2="18"  stroke="#FFFFFF" strokeWidth="1.2" strokeLinecap="round" opacity="0.65"/>
+        {/* Right */}
+        <line x1="305" y1="148" x2="285" y2="148" stroke="rgba(255,255,255,0.88)" strokeWidth="2.2" strokeLinecap="round"/>
+        <line x1="295" y1="138" x2="295" y2="158" stroke="rgba(255,255,255,0.88)" strokeWidth="2.2" strokeLinecap="round"/>
+        {/* Left */}
+        <line x1="-5"  y1="148" x2="15"  y2="148" stroke="rgba(255,255,255,0.70)" strokeWidth="1.8" strokeLinecap="round"/>
+        <line x1="5"   y1="138" x2="5"   y2="158" stroke="rgba(255,255,255,0.70)" strokeWidth="1.8" strokeLinecap="round"/>
+        {/* Bottom */}
+        <line x1="150" y1="348" x2="150" y2="320" stroke="rgba(255,255,255,0.68)" strokeWidth="1.8" strokeLinecap="round"/>
+        <line x1="140" y1="334" x2="160" y2="334" stroke="rgba(255,255,255,0.68)" strokeWidth="1.8" strokeLinecap="round"/>
       </svg>
     </div>
   )

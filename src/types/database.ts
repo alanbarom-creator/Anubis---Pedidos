@@ -110,6 +110,8 @@ export interface Pedido {
   sucursal_id: string | null
   capturado_por: string | null
   notas: string | null
+  imagen_inicio_url: string | null
+  imagen_render_url: string | null
   created_at: string
   sucursales?: Sucursal
   usuarios?: Usuario

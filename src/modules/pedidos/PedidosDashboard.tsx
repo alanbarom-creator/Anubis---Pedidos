@@ -1,11 +1,16 @@
-import { useState, useEffect, useCallback, type FormEvent } from 'react'
+import { useState, useEffect, useCallback, useRef, type FormEvent } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
 import type { Pedido, EstatusPedido, Sucursal } from '../../types/database'
 
 const SUCURSALES_DEFAULT = [
-  'Anubis Sahuaro Grande','Anubis Sahuaro Chico','Anubis Aguascalientes',
-  'Anubis Galerias','Anubis Centro','M&P Galerías',
+  'Sumefra',
+  'Anubis Aguascalientes',
+  'Anubis Centro',
+  'Anubis Galerías',
+  'Anubis Sahuaro Grande',
+  'Anubis Sahuaro Chico',
+  'M&P Galerías',
 ]
 
 const ESTATUS_CONFIG: Record<EstatusPedido, { label: string; color: string; bg: string }> = {
@@ -29,6 +34,7 @@ export default function PedidosDashboard() {
   const [loading, setLoading] = useState(true)
   const [filtroEstatus, setFiltroEstatus] = useState<EstatusPedido | 'todos'>('todos')
   const [sucursales, setSucursales] = useState<Sucursal[]>([])
+  const [pedidoImagen, setPedidoImagen] = useState<Pedido | null>(null)
 
   const cargar = useCallback(async () => {
     setLoading(true)
@@ -54,8 +60,17 @@ export default function PedidosDashboard() {
     ? pedidos
     : pedidos.filter(p => p.estatus === filtroEstatus)
 
-  // Pedidos activos (no entregados ni cancelados) para el listado de folios
   const pedidosActivos = pedidos.filter(p => !['entregado','cancelado'].includes(p.estatus))
+
+  function abrirImagen(p: Pedido) {
+    // Sync latest data from list
+    setPedidoImagen(p)
+  }
+
+  function handleImagenUpdate(actualizado: Pedido) {
+    setPedidos(prev => prev.map(p => p.id === actualizado.id ? actualizado : p))
+    setPedidoImagen(actualizado)
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
@@ -121,7 +136,7 @@ export default function PedidosDashboard() {
                         <span style={{ fontWeight: 700, fontSize: 13, color: 'var(--gold)', minWidth: 80 }}>{p.folio}</span>
                         <div style={{ flex: 1 }}>
                           <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>{p.cliente}</div>
-                          <div style={{ fontSize: 11, color: 'var(--text-dim)' }}>
+                          <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>
                             {p.sucursales?.nombre ?? '—'} · Entrega: {p.fecha_entrega ? fmt(p.fecha_entrega) : 'Sin fecha'}
                           </div>
                         </div>
@@ -186,15 +201,17 @@ export default function PedidosDashboard() {
                       <th className="tabla-th">Entrega</th>
                       <th className="tabla-th">Peso</th>
                       <th className="tabla-th">Estatus</th>
+                      <th className="tabla-th">Imágenes</th>
                       {isSocioOrAdmin && <th className="tabla-th">Acciones</th>}
                     </tr>
                   </thead>
                   <tbody>
                     {pedidosFiltrados.length === 0 ? (
-                      <tr><td colSpan={9} className="loading-row">Sin pedidos</td></tr>
+                      <tr><td colSpan={10} className="loading-row">Sin pedidos</td></tr>
                     ) : (
                       pedidosFiltrados.map(p => {
                         const cfg = ESTATUS_CONFIG[p.estatus]
+                        const tieneImagenes = !!(p.imagen_inicio_url || p.imagen_render_url)
                         return (
                           <tr key={p.id} className="tabla-fila">
                             <td className="tabla-celda" style={{ fontWeight: 700, color: 'var(--gold)' }}>{p.folio}</td>
@@ -206,6 +223,29 @@ export default function PedidosDashboard() {
                             <td className="tabla-celda">{p.peso ? `${p.peso}g` : '—'}</td>
                             <td className="tabla-celda">
                               <span className="badge" style={{ background: cfg.bg, color: cfg.color }}>{cfg.label}</span>
+                            </td>
+                            <td className="tabla-celda">
+                              <button
+                                className="btn-icon"
+                                title={tieneImagenes ? 'Ver / subir imágenes' : 'Subir imágenes'}
+                                onClick={() => abrirImagen(p)}
+                                style={{ position: 'relative' }}
+                              >
+                                <svg width="16" height="16" viewBox="0 0 20 20" fill="none"
+                                  stroke={tieneImagenes ? 'var(--gold)' : 'var(--text-muted)'}
+                                  strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                                  <rect x="1" y="4" width="18" height="13" rx="2"/>
+                                  <circle cx="10" cy="10.5" r="3"/>
+                                  <path d="M6.5 4l1.5-3h4l1.5 3"/>
+                                </svg>
+                                {tieneImagenes && (
+                                  <span style={{
+                                    position: 'absolute', top: 1, right: 1,
+                                    width: 6, height: 6, borderRadius: '50%',
+                                    background: 'var(--gold)',
+                                  }} />
+                                )}
+                              </button>
                             </td>
                             {isSocioOrAdmin && (
                               <td className="tabla-celda">
@@ -232,6 +272,15 @@ export default function PedidosDashboard() {
           onCancel={() => setVista('dashboard')}
         />
       )}
+
+      {/* Modal imágenes */}
+      {pedidoImagen && (
+        <ImagenModal
+          pedido={pedidoImagen}
+          onClose={() => setPedidoImagen(null)}
+          onUpdate={handleImagenUpdate}
+        />
+      )}
     </div>
   )
 }
@@ -253,6 +302,263 @@ function EstatusSelector({ pedido, onUpdate }: { pedido: Pedido; onUpdate: () =>
         <option key={v} value={v}>{label}</option>
       ))}
     </select>
+  )
+}
+
+// ── Modal de imágenes ──────────────────────────────────────
+const BUCKET = 'pedido-imagenes'
+
+function ImagenModal({
+  pedido,
+  onClose,
+  onUpdate,
+}: {
+  pedido: Pedido
+  onClose: () => void
+  onUpdate: (p: Pedido) => void
+}) {
+  const [inicioUrl, setInicioUrl] = useState(pedido.imagen_inicio_url ?? null)
+  const [renderUrl, setRenderUrl] = useState(pedido.imagen_render_url ?? null)
+  const [uploading, setUploading] = useState<'inicio' | 'render' | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [visor, setVisor] = useState<string | null>(null)
+  const inicioRef = useRef<HTMLInputElement>(null)
+  const renderRef = useRef<HTMLInputElement>(null)
+
+  async function uploadImagen(tipo: 'inicio' | 'render', file: File) {
+    setError(null)
+    setUploading(tipo)
+    const ext = file.name.split('.').pop()?.toLowerCase() ?? 'jpg'
+    const path = `${pedido.id}/${tipo}.${ext}`
+
+    const { error: upErr } = await supabase.storage
+      .from(BUCKET)
+      .upload(path, file, { upsert: true, contentType: file.type })
+
+    if (upErr) {
+      setError(upErr.message)
+      setUploading(null)
+      return
+    }
+
+    const { data: urlData } = supabase.storage.from(BUCKET).getPublicUrl(path)
+    // Bust cache by appending timestamp
+    const url = urlData.publicUrl + '?t=' + Date.now()
+
+    const field = tipo === 'inicio' ? 'imagen_inicio_url' : 'imagen_render_url'
+    const { data: updated, error: updateErr } = await supabase
+      .from('pedidos')
+      .update({ [field]: urlData.publicUrl })
+      .eq('id', pedido.id)
+      .select('*, sucursales(*), usuarios(*)')
+      .single()
+
+    if (updateErr) {
+      setError(updateErr.message)
+      setUploading(null)
+      return
+    }
+
+    if (tipo === 'inicio') setInicioUrl(url)
+    else setRenderUrl(url)
+
+    if (updated) onUpdate(updated as Pedido)
+    setUploading(null)
+  }
+
+  async function eliminarImagen(tipo: 'inicio' | 'render') {
+    setError(null)
+    const url = tipo === 'inicio' ? inicioUrl : renderUrl
+    if (!url) return
+
+    // Remove from storage (try both common extensions)
+    const basePath = `${pedido.id}/${tipo}`
+    for (const ext of ['jpg', 'jpeg', 'png', 'webp', 'gif']) {
+      await supabase.storage.from(BUCKET).remove([`${basePath}.${ext}`])
+    }
+
+    const field = tipo === 'inicio' ? 'imagen_inicio_url' : 'imagen_render_url'
+    const { data: updated } = await supabase
+      .from('pedidos')
+      .update({ [field]: null })
+      .eq('id', pedido.id)
+      .select('*, sucursales(*), usuarios(*)')
+      .single()
+
+    if (tipo === 'inicio') setInicioUrl(null)
+    else setRenderUrl(null)
+
+    if (updated) onUpdate(updated as Pedido)
+  }
+
+  function handleFile(tipo: 'inicio' | 'render', e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    uploadImagen(tipo, file)
+    e.target.value = ''
+  }
+
+  return (
+    <>
+      <div className="modal-overlay" onClick={onClose} />
+      <div className="modal" style={{ maxWidth: 680, width: '90vw' }}>
+        <div className="modal-header">
+          <div>
+            <h2 className="modal-title">Imágenes del pedido</h2>
+            <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: 0 }}>
+              {pedido.folio} · {pedido.cliente}
+            </p>
+          </div>
+          <button className="btn-icon" onClick={onClose}>
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <path d="M15 5L5 15M5 5l10 10"/>
+            </svg>
+          </button>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, padding: '20px 24px 24px' }}>
+          {(['inicio', 'render'] as const).map(tipo => {
+            const url = tipo === 'inicio' ? inicioUrl : renderUrl
+            const ref = tipo === 'inicio' ? inicioRef : renderRef
+            const isUploading = uploading === tipo
+            const label = tipo === 'inicio' ? 'Imagen Inicio' : 'Imagen Render'
+            const sublabel = tipo === 'inicio' ? 'Diseño o boceto inicial' : 'Render o foto final'
+
+            return (
+              <div key={tipo} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 2 }}>{label}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{sublabel}</div>
+                </div>
+
+                {/* Preview area */}
+                <div
+                  onClick={() => url && setVisor(url)}
+                  style={{
+                    width: '100%',
+                    aspectRatio: '4/3',
+                    borderRadius: 10,
+                    border: '2px dashed var(--border)',
+                    background: 'var(--bg)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    overflow: 'hidden',
+                    cursor: url ? 'zoom-in' : 'default',
+                    position: 'relative',
+                    transition: 'border-color 0.2s',
+                  }}
+                >
+                  {url ? (
+                    <img
+                      src={url}
+                      alt={label}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      onError={() => {
+                        if (tipo === 'inicio') setInicioUrl(null)
+                        else setRenderUrl(null)
+                      }}
+                    />
+                  ) : (
+                    <div style={{ textAlign: 'center', color: 'var(--text-dim)' }}>
+                      <svg width="36" height="36" viewBox="0 0 20 20" fill="none"
+                        stroke="var(--border)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
+                        style={{ margin: '0 auto 8px', display: 'block' }}>
+                        <rect x="1" y="4" width="18" height="13" rx="2"/>
+                        <circle cx="10" cy="10.5" r="3"/>
+                        <path d="M6.5 4l1.5-3h4l1.5 3"/>
+                      </svg>
+                      <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Sin imagen</span>
+                    </div>
+                  )}
+                  {isUploading && (
+                    <div style={{
+                      position: 'absolute', inset: 0,
+                      background: 'rgba(247,244,239,0.8)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      borderRadius: 10,
+                    }}>
+                      <div style={{ fontSize: 13, color: 'var(--gold)', fontWeight: 600 }}>Subiendo...</div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Actions */}
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <input
+                    ref={ref}
+                    type="file"
+                    accept="image/*"
+                    style={{ display: 'none' }}
+                    onChange={e => handleFile(tipo, e)}
+                  />
+                  <button
+                    className="btn-primary btn-sm"
+                    style={{ flex: 1 }}
+                    disabled={isUploading}
+                    onClick={() => ref.current?.click()}
+                  >
+                    {isUploading ? 'Subiendo...' : url ? 'Reemplazar' : 'Subir imagen'}
+                  </button>
+                  {url && (
+                    <button
+                      className="btn-danger btn-sm"
+                      disabled={isUploading}
+                      onClick={() => eliminarImagen(tipo)}
+                      title="Eliminar imagen"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                        <path d="M3 6h14M8 6V4h4v2M5 6l1 11h8l1-11"/>
+                      </svg>
+                    </button>
+                  )}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+
+        {error && (
+          <div className="form-error" style={{ margin: '0 24px 20px' }}>
+            {error}
+          </div>
+        )}
+
+        <div style={{ padding: '0 24px 20px', fontSize: 12, color: 'var(--text-muted)' }}>
+          Formatos admitidos: JPG, PNG, WebP, GIF · Tamaño máximo recomendado: 5 MB
+        </div>
+      </div>
+
+      {/* Visor de imagen completa */}
+      {visor && (
+        <>
+          <div
+            className="modal-overlay"
+            style={{ zIndex: 200 }}
+            onClick={() => setVisor(null)}
+          />
+          <div style={{
+            position: 'fixed', inset: 0, zIndex: 201,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            pointerEvents: 'none',
+          }}>
+            <img
+              src={visor}
+              alt="Vista completa"
+              style={{
+                maxWidth: '90vw', maxHeight: '85vh',
+                borderRadius: 12,
+                boxShadow: '0 24px 80px rgba(30,24,16,0.5)',
+                pointerEvents: 'auto',
+                cursor: 'zoom-out',
+                objectFit: 'contain',
+              }}
+              onClick={() => setVisor(null)}
+            />
+          </div>
+        </>
+      )}
+    </>
   )
 }
 
