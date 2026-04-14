@@ -5,12 +5,41 @@ import { supabase } from '../lib/supabase'
 
 type Mode = 'login' | 'register'
 
-function DiamondSVG() {
+// ── Decorative SVG elements ────────────────────────────────
+function CrownDiamond() {
   return (
-    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M16 2L28 10L24 28H8L4 10L16 2Z" stroke="#C9992A" strokeWidth="1.5" fill="none"/>
-      <path d="M4 10H28M16 2L8 10L12 28M16 2L24 10L20 28" stroke="#C9992A" strokeWidth="0.8" strokeOpacity="0.5" fill="none"/>
+    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M18 2L26 12L34 6L30 26H6L2 6L10 12L18 2Z" stroke="#C9992A" strokeWidth="1.4" strokeLinejoin="round" fill="rgba(201,153,42,0.08)"/>
+      <path d="M6 26H30" stroke="#C9992A" strokeWidth="1.2" strokeOpacity="0.5"/>
+      <circle cx="18" cy="18" r="4" stroke="#E0B84A" strokeWidth="1" fill="rgba(224,184,74,0.12)"/>
+      <path d="M18 14L20 16L18 22L16 16L18 14Z" stroke="#E0B84A" strokeWidth="0.8" fill="none" strokeOpacity="0.7"/>
     </svg>
+  )
+}
+
+function ScatterDiamonds() {
+  return (
+    <div className="login-bg" aria-hidden="true">
+      <div className="login-bg-radial" />
+      {/* Floating gems */}
+      <div className="gem gem-diamond gem-1" />
+      <div className="gem gem-diamond gem-2" />
+      <div className="gem gem-diamond gem-3" />
+      <div className="gem gem-diamond gem-4" />
+      <div className="gem gem-diamond gem-5" />
+      <div className="gem gem-diamond gem-6" />
+      <div className="gem gem-diamond gem-9" />
+      <div className="gem gem-diamond gem-10" />
+      <div className="gem gem-ring gem-7" />
+      <div className="gem gem-ring gem-8" />
+      <div className="gem gem-ring gem-11" />
+      <div className="gem gem-ring gem-12" />
+      {/* Sparkle lines */}
+      <div className="login-sparkle-line login-sparkle-line--1" />
+      <div className="login-sparkle-line login-sparkle-line--2" />
+      {/* Gold dust particles */}
+      <div className="login-dust" />
+    </div>
   )
 }
 
@@ -93,28 +122,18 @@ export default function Login() {
 
   return (
     <div className="login-page">
-      {/* Animated jewelry background */}
-      <div className="login-bg">
-        <div className="login-bg-radial" />
-        <div className="gem gem-diamond gem-1" />
-        <div className="gem gem-diamond gem-2" />
-        <div className="gem gem-diamond gem-3" />
-        <div className="gem gem-diamond gem-4" />
-        <div className="gem gem-diamond gem-5" />
-        <div className="gem gem-diamond gem-6" />
-        <div className="gem gem-ring gem-7" />
-        <div className="gem gem-ring gem-8" />
-      </div>
+      <ScatterDiamonds />
 
       <div className="login-wrapper">
         <div className="login-card">
           {/* Brand */}
           <div className="login-brand">
-            <div className="login-logo">
-              <DiamondSVG />
+            <div className="login-logo-ring">
+              <div className="login-logo">
+                <CrownDiamond />
+              </div>
             </div>
             <h1 className="login-title">SUMEFRA</h1>
-            <p className="login-tagline">Sistema de Gestión · Joyería</p>
           </div>
 
           {/* Mode tabs */}
@@ -176,8 +195,10 @@ export default function Login() {
                 </div>
               )}
 
-              <button type="submit" className="btn-primary" disabled={loading} style={{ width: '100%', marginTop: 4 }}>
-                {loading ? 'Ingresando...' : 'Ingresar al sistema'}
+              <button type="submit" className="btn-login" disabled={loading}>
+                {loading
+                  ? <span className="btn-login-loading"><span /><span /><span /></span>
+                  : 'Ingresar'}
               </button>
             </form>
           )}
@@ -273,19 +294,18 @@ export default function Login() {
               )}
 
               {!success && (
-                <button type="submit" className="btn-primary" disabled={loading} style={{ width: '100%', marginTop: 4 }}>
-                  {loading ? 'Registrando...' : 'Solicitar acceso'}
+                <button type="submit" className="btn-login" disabled={loading}>
+                  {loading
+                    ? <span className="btn-login-loading"><span /><span /><span /></span>
+                    : 'Solicitar acceso'}
                 </button>
               )}
 
-              <p style={{ fontSize: 11, color: 'var(--text-dim)', textAlign: 'center', lineHeight: 1.5 }}>
-                El acceso requiere autorización previa.<br />
-                Contacta al administrador si tienes problemas.
+              <p className="login-note">
+                El acceso requiere autorización previa por el administrador.
               </p>
             </form>
           )}
-
-          <p className="login-footer">SUMEFRA · Plataforma ERP Joyería</p>
         </div>
       </div>
     </div>

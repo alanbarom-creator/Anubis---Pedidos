@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
-import { useKPIs, useTodasCuentas, useSucursales } from './useFinanzas'
+import { useKPIs, useTodasCuentas, useSucursales, useTodasCategorias } from './useFinanzas'
 import KPICard from './KPICard'
 import SaldoCuentas from './SaldoCuentas'
 import GraficaTransacciones from './GraficaTransacciones'
@@ -8,6 +8,7 @@ import TransaccionesTable from './TransaccionesTable'
 import CapturaTransaccion from './CapturaTransaccion'
 import AdminCuentas from './AdminCuentas'
 import AdminSucursales from './AdminSucursales'
+import AdminCategorias from './AdminCategorias'
 import Traspasos from './Traspasos'
 
 type Vista = 'dashboard' | 'captura' | 'traspasos'
@@ -17,10 +18,12 @@ export default function FinanzasDashboard() {
   const { kpis, loading, recargar } = useKPIs()
   const { cuentas, recargar: recargarCuentas } = useTodasCuentas()
   const { sucursales, recargar: recargarSucursales } = useSucursales()
+  const { categorias, recargar: recargarCategorias } = useTodasCategorias()
 
   const [vista, setVista] = useState<Vista>('dashboard')
   const [modalCuentas, setModalCuentas] = useState(false)
   const [modalSucursales, setModalSucursales] = useState(false)
+  const [modalCategorias, setModalCategorias] = useState(false)
 
   const puedeCapturar = rol !== 'contador'
 
@@ -71,6 +74,9 @@ export default function FinanzasDashboard() {
               <button className="btn-secondary btn-sm" onClick={() => setModalSucursales(true)}>
                 Sucursales
               </button>
+              <button className="btn-secondary btn-sm" onClick={() => setModalCategorias(true)}>
+                Categorías
+              </button>
             </>
           )}
           <button className="btn-icon" onClick={() => { recargar(); recargarCuentas() }} title="Recargar">
@@ -94,10 +100,10 @@ export default function FinanzasDashboard() {
               </>
             ) : (
               <>
-                <KPICard titulo="Ingresos hoy"   valor={kpis.ingresos_hoy}  variante="positive" descripcion="Total ingresos del día" />
-                <KPICard titulo="Egresos hoy"    valor={kpis.egresos_hoy}   variante="negative" descripcion="Total egresos del día" />
-                <KPICard titulo="Saldo total"    valor={kpis.saldo_total}   variante={kpis.saldo_total >= 0 ? 'positive' : 'negative'} descripcion="Suma de todas las cuentas" />
-                <KPICard titulo="Utilidad del mes" valor={kpis.utilidad_mes} variante={kpis.utilidad_mes >= 0 ? 'positive' : 'negative'} descripcion="Ingresos − Egresos del mes" />
+                <KPICard titulo="Ingresos hoy"     valor={kpis.ingresos_hoy}  variante="positive" descripcion="Total ingresos del día" />
+                <KPICard titulo="Egresos hoy"      valor={kpis.egresos_hoy}   variante="negative" descripcion="Total egresos del día" />
+                <KPICard titulo="Saldo total"      valor={kpis.saldo_total}   variante={kpis.saldo_total >= 0 ? 'positive' : 'negative'} descripcion="Suma de todas las cuentas" />
+                <KPICard titulo="Utilidad del mes" valor={kpis.utilidad_mes}  variante={kpis.utilidad_mes >= 0 ? 'positive' : 'negative'} descripcion="Ingresos − Egresos del mes" />
               </>
             )}
           </div>
@@ -134,6 +140,13 @@ export default function FinanzasDashboard() {
           sucursales={sucursales}
           onClose={() => setModalSucursales(false)}
           onRefresh={recargarSucursales}
+        />
+      )}
+      {modalCategorias && (
+        <AdminCategorias
+          categorias={categorias}
+          onClose={() => setModalCategorias(false)}
+          onRefresh={recargarCategorias}
         />
       )}
     </div>

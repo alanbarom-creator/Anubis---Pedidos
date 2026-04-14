@@ -194,3 +194,23 @@ export function useTodasCuentas() {
 
   return { cuentas, loading, recargar: cargar }
 }
+
+export function useTodasCategorias() {
+  const [categorias, setCategorias] = useState<CategoriaGasto[]>([])
+  const [loading, setLoading] = useState(true)
+
+  const cargar = useCallback(async () => {
+    setLoading(true)
+    const { data } = await supabase
+      .from('categorias_gasto')
+      .select('*')
+      .order('tipo')
+      .order('nombre')
+    setCategorias((data as CategoriaGasto[]) ?? [])
+    setLoading(false)
+  }, [])
+
+  useEffect(() => { cargar() }, [cargar])
+
+  return { categorias, loading, recargar: cargar }
+}
