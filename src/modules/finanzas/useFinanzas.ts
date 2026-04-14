@@ -1,7 +1,7 @@
 // Hook central para datos de finanzas
 import { useEffect, useState, useCallback } from 'react'
 import { supabase } from '../../lib/supabase'
-import type { Transaccion, CuentaBanco, CategoriaGasto } from '../../types/database'
+import type { Transaccion, CuentaBanco, CategoriaGasto, Sucursal } from '../../types/database'
 
 export interface KPIsFinanzas {
   ingresos_hoy: number
@@ -161,4 +161,36 @@ export function useDatosGrafica() {
   }, [])
 
   return { datos, loading }
+}
+
+export function useSucursales() {
+  const [sucursales, setSucursales] = useState<Sucursal[]>([])
+  const [loading, setLoading] = useState(true)
+
+  const cargar = useCallback(async () => {
+    setLoading(true)
+    const { data } = await supabase.from('sucursales').select('*').order('nombre')
+    setSucursales((data as Sucursal[]) ?? [])
+    setLoading(false)
+  }, [])
+
+  useEffect(() => { cargar() }, [cargar])
+
+  return { sucursales, loading, recargar: cargar }
+}
+
+export function useTodasCuentas() {
+  const [cuentas, setCuentas] = useState<CuentaBanco[]>([])
+  const [loading, setLoading] = useState(true)
+
+  const cargar = useCallback(async () => {
+    setLoading(true)
+    const { data } = await supabase.from('cuentas_banco').select('*').order('nombre')
+    setCuentas((data as CuentaBanco[]) ?? [])
+    setLoading(false)
+  }, [])
+
+  useEffect(() => { cargar() }, [cargar])
+
+  return { cuentas, loading, recargar: cargar }
 }

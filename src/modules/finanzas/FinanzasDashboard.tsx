@@ -1,35 +1,43 @@
 import { useState, useCallback } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
-import { useKPIs } from './useFinanzas'
+import { useKPIs, useTodasCuentas, useSucursales } from './useFinanzas'
 import KPICard from './KPICard'
 import SaldoCuentas from './SaldoCuentas'
 import GraficaTransacciones from './GraficaTransacciones'
 import TransaccionesTable from './TransaccionesTable'
 import CapturaTransaccion from './CapturaTransaccion'
+import AdminCuentas from './AdminCuentas'
+import AdminSucursales from './AdminSucursales'
+import Traspasos from './Traspasos'
 
-type Vista = 'dashboard' | 'captura'
+type Vista = 'dashboard' | 'captura' | 'traspasos'
 
 export default function FinanzasDashboard() {
-  const { rol } = useAuth()
+  const { rol, isSocioOrAdmin } = useAuth()
   const { kpis, loading, recargar } = useKPIs()
+  const { cuentas, recargar: recargarCuentas } = useTodasCuentas()
+  const { sucursales, recargar: recargarSucursales } = useSucursales()
+
   const [vista, setVista] = useState<Vista>('dashboard')
+  const [modalCuentas, setModalCuentas] = useState(false)
+  const [modalSucursales, setModalSucursales] = useState(false)
 
   const puedeCapturar = rol !== 'contador'
 
   const handleSuccessCaptura = useCallback(() => {
     recargar()
-    // Volver al dashboard después de capturar
+    recargarCuentas()
     setTimeout(() => setVista('dashboard'), 1200)
-  }, [recargar])
+  }, [recargar, recargarCuentas])
 
   return (
-    <div className="modulo-finanzas">
-      {/* Encabezado del módulo */}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+      {/* Encabezado */}
       <div className="modulo-header">
         <div>
           <h1 className="modulo-titulo">Finanzas</h1>
           <p className="modulo-subtitulo">
-            {rol === 'contador' ? 'Solo lectura' : 'Gestión de ingresos y egresos'}
+            {rol === 'contador' ? 'Solo lectura' : 'Gestión de ingresos, egresos y traspasos'}
           </p>
         </div>
         <div className="modulo-acciones">
@@ -37,7 +45,7 @@ export default function FinanzasDashboard() {
             className={`tab-btn ${vista === 'dashboard' ? 'tab-btn--active' : ''}`}
             onClick={() => setVista('dashboard')}
           >
-            ▤ Dashboard
+            Dashboard
           </button>
           {puedeCapturar && (
             <button
@@ -47,19 +55,35 @@ export default function FinanzasDashboard() {
               + Capturar
             </button>
           )}
-          <button
-            className="btn-icon"
-            onClick={recargar}
-            title="Recargar datos"
-          >
-            ↺
+          {isSocioOrAdmin && (
+            <button
+              className={`tab-btn ${vista === 'traspasos' ? 'tab-btn--active' : ''}`}
+              onClick={() => setVista('traspasos')}
+            >
+              Traspasos
+            </button>
+          )}
+          {isSocioOrAdmin && (
+            <>
+              <button className="btn-secondary btn-sm" onClick={() => setModalCuentas(true)}>
+                Cuentas
+              </button>
+              <button className="btn-secondary btn-sm" onClick={() => setModalSucursales(true)}>
+                Sucursales
+              </button>
+            </>
+          )}
+          <button className="btn-icon" onClick={() => { recargar(); recargarCuentas() }} title="Recargar">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <path d="M4 4a8 8 0 0112.2 1.4M16 16a8 8 0 01-12.2-1.4M4 8V4H0M16 12v4h4"/>
+            </svg>
           </button>
         </div>
       </div>
 
+      {/* Dashboard */}
       {vista === 'dashboard' && (
         <>
-          {/* KPIs */}
           <div className="kpis-grid">
             {loading || !kpis ? (
               <>
@@ -70,47 +94,47 @@ export default function FinanzasDashboard() {
               </>
             ) : (
               <>
-                <KPICard
-                  titulo="Ingresos hoy"
-                  valor={kpis.ingresos_hoy}
-                  variante="positive"
-                  descripcion="Total ingresos del día"
-                />
-                <KPICard
-                  titulo="Egresos hoy"
-                  valor={kpis.egresos_hoy}
-                  variante="negative"
-                  descripcion="Total egresos del día"
-                />
-                <KPICard
-                  titulo="Saldo total"
-                  valor={kpis.saldo_total}
-                  variante={kpis.saldo_total > 0 ? 'positive' : 'negative'}
-                  descripcion="Suma de todas las cuentas"
-                />
-                <KPICard
-                  titulo="Utilidad del mes"
-                  valor={kpis.utilidad_mes}
-                  variante={kpis.utilidad_mes >= 0 ? 'positive' : 'negative'}
-                  descripcion="Ingresos − Egresos (mes actual)"
-                />
+                <KPICard titulo="Ingresos hoy"   valor={kpis.ingresos_hoy}  variante="positive" descripcion="Total ingresos del día" />
+                <KPICard titulo="Egresos hoy"    valor={kpis.egresos_hoy}   variante="negative" descripcion="Total egresos del día" />
+                <KPICard titulo="Saldo total"    valor={kpis.saldo_total}   variante={kpis.saldo_total >= 0 ? 'positive' : 'negative'} descripcion="Suma de todas las cuentas" />
+                <KPICard titulo="Utilidad del mes" valor={kpis.utilidad_mes} variante={kpis.utilidad_mes >= 0 ? 'positive' : 'negative'} descripcion="Ingresos − Egresos del mes" />
               </>
             )}
           </div>
 
-          {/* Gráfica + Saldo de cuentas */}
           <div className="dashboard-grid-2">
             <GraficaTransacciones />
             <SaldoCuentas />
           </div>
 
-          {/* Tabla de transacciones */}
           <TransaccionesTable />
         </>
       )}
 
+      {/* Captura */}
       {vista === 'captura' && puedeCapturar && (
         <CapturaTransaccion onSuccess={handleSuccessCaptura} />
+      )}
+
+      {/* Traspasos */}
+      {vista === 'traspasos' && isSocioOrAdmin && (
+        <Traspasos cuentas={cuentas.filter(c => c.activo)} />
+      )}
+
+      {/* Modales */}
+      {modalCuentas && (
+        <AdminCuentas
+          cuentas={cuentas}
+          onClose={() => setModalCuentas(false)}
+          onRefresh={recargarCuentas}
+        />
+      )}
+      {modalSucursales && (
+        <AdminSucursales
+          sucursales={sucursales}
+          onClose={() => setModalSucursales(false)}
+          onRefresh={recargarSucursales}
+        />
       )}
     </div>
   )
