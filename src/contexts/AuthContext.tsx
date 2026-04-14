@@ -81,26 +81,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   async function signIn(email: string, password: string) {
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    return { error: error?.message ?? null }
-  }
+    const { error, data } = await supabase.auth.signInWithPassword({ email, password })
+    if (error) return { error: error.message }
 
-  async function signUp(email: string, password: string, nombre: string, sucursal_id: string) {
-    // Verificar si el correo está autorizado por Alan Baro
-    const { data: autorizado } = await supabase
-      .from('email_autorizados')
-      .select('id')
-      .eq('email', email.toLowerCase().trim())
-      .eq('activo', true)
-      .maybeSingle()
-
-    if (!autorizado) {
-      return {
-        error: 'Tu correo no está autorizado para registro. Contacta al administrador (Alan Baro) para solicitar acceso.',
-        message: null,
+    // Verificar que la cuenta esté activa (aprobada por administrador)
+    if (data.user) {
+      const { data: p } = await supabase
+        .from('usuarios')
+        .select('activo')
+        .eq('id', data.user.id)
+        .maybeSingle()
+      if (p && !p.activo) {
+        await supabase.auth.signOut()
+        return { error: 'Tu cuenta está pendiente de activación por el administrador. Te notificaremos cuando esté lista.' }
       }
     }
 
+    return { error: null }
+  }
+
+  async function signUp(email: string, password: string, nombre: string, sucursal_id: string) {
+    // Registro abierto — cualquiera puede solicitar acceso.
+    // El administrador activa la cuenta desde el portal (módulo Usuarios).
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -112,18 +114,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     if (error) return { error: error.message, message: null }
 
-    // Actualizar sucursal en el perfil de usuario si ya existe
-    const { data: { session } } = await supabase.auth.getSession()
-    if (session?.user?.id) {
-      await supabase
-        .from('usuarios')
-        .update({ sucursal_id })
-        .eq('id', session.user.id)
-    }
-
     return {
       error: null,
-      message: 'Registro exitoso. Revisa tu correo electrónico para confirmar tu cuenta antes de ingresar.',
+      message: 'Solicitud enviada. Revisa tu correo para confirmar tu cuenta. El administrador activará tu acceso en breve.',
     }
   }
 

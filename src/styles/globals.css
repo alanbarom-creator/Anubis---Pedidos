@@ -338,7 +338,11 @@ input[type="number"]::-webkit-inner-spin-button { opacity: 0.4; }
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(ellipse 120% 100% at 50% 0%, #0D0B1A 0%, var(--bg) 60%);
+  background:
+    radial-gradient(ellipse 120% 80% at 70% 50%, #080F2A 0%, transparent 55%),
+    radial-gradient(ellipse 80% 100% at 20% 30%, #120A02 0%, transparent 60%),
+    radial-gradient(ellipse 100% 60% at 50% 100%, #04080F 0%, transparent 60%),
+    #050610;
   overflow: hidden;
   position: relative;
 }
@@ -355,10 +359,37 @@ input[type="number"]::-webkit-inner-spin-button { opacity: 0.4; }
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse 80% 60% at 15% 10%, rgba(201,153,42,0.10) 0%, transparent 55%),
-    radial-gradient(ellipse 60% 70% at 88% 90%, rgba(201,153,42,0.08) 0%, transparent 55%),
-    radial-gradient(ellipse 40% 50% at 65% 35%, rgba(74,158,224,0.04) 0%, transparent 60%),
-    radial-gradient(ellipse 30% 30% at 35% 70%, rgba(160,90,220,0.03) 0%, transparent 50%);
+    radial-gradient(ellipse 60% 50% at 75% 50%,  rgba(201,153,42,0.12) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 15% 15%,  rgba(201,153,42,0.09) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 60% at 88% 85%,  rgba(201,153,42,0.07) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 35% 70%,  rgba(40,80,200,0.06)  0%, transparent 55%),
+    radial-gradient(ellipse 30% 30% at 60% 20%,  rgba(80,140,230,0.04) 0%, transparent 50%);
+}
+
+/* ── Big background diamond ──────────────────────────────── */
+.login-diamond-bg {
+  position: absolute;
+  width: clamp(320px, 58vmin, 620px);
+  height: clamp(360px, 65vmin, 700px);
+  top: 50%;
+  right: 2%;
+  transform: translateY(-50%) rotate(-4deg);
+  animation: bigDiamondAnim 10s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes bigDiamondAnim {
+  0%   {
+    transform: translateY(-50%) rotate(-4deg) scale(0.97);
+    filter: drop-shadow(0 0 30px rgba(201,153,42,0.25)) drop-shadow(0 0 80px rgba(201,153,42,0.10));
+    opacity: 0.75;
+  }
+  100% {
+    transform: translateY(-50%) rotate(4deg) scale(1.03);
+    filter: drop-shadow(0 0 60px rgba(201,153,42,0.45)) drop-shadow(0 0 140px rgba(201,153,42,0.20));
+    opacity: 1;
+  }
 }
 
 /* Gold dust shimmer */
@@ -467,15 +498,16 @@ input[type="number"]::-webkit-inner-spin-button { opacity: 0.4; }
 
 .login-card {
   width: 100%;
-  background: linear-gradient(160deg, #131222 0%, #0F0E1C 100%);
-  border: 1px solid rgba(201,153,42,0.18);
+  background: linear-gradient(155deg, #0D1B3E 0%, #0A1428 45%, #0E1B38 100%);
+  border: 1px solid rgba(201,153,42,0.28);
   border-radius: 24px;
   padding: 48px 44px 40px;
   box-shadow:
-    0 32px 80px rgba(0,0,0,0.7),
-    0 0 0 1px rgba(201,153,42,0.06),
-    inset 0 1px 0 rgba(201,153,42,0.08);
-  backdrop-filter: blur(12px);
+    0 32px 80px rgba(0,0,0,0.65),
+    0 0 0 1px rgba(201,153,42,0.10),
+    0 0 60px rgba(20,50,120,0.15),
+    inset 0 1px 0 rgba(201,153,42,0.12);
+  backdrop-filter: blur(20px);
   position: relative;
   overflow: hidden;
 }

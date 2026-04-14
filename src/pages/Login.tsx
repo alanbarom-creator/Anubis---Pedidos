@@ -17,11 +17,80 @@ function CrownDiamond() {
   )
 }
 
+// ── Large background diamond ───────────────────────────────
+function BigDiamondBg() {
+  return (
+    <div className="login-diamond-bg" aria-hidden="true">
+      <svg viewBox="0 0 300 340" fill="none" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+        {/* Outer diamond outline */}
+        <polygon points="150,4 296,130 150,336 4,130"
+          stroke="rgba(201,153,42,0.55)" strokeWidth="1.2" fill="none"/>
+        {/* Inner table octagon */}
+        <polygon points="150,38 210,63 242,130 210,197 150,222 90,197 58,130 90,63"
+          stroke="rgba(224,184,74,0.45)" strokeWidth="0.8" fill="rgba(201,153,42,0.03)"/>
+        {/* Top star facet */}
+        <polygon points="150,4 90,63 150,38 210,63"
+          stroke="rgba(201,153,42,0.3)" strokeWidth="0.6" fill="rgba(224,184,74,0.05)"/>
+        {/* Right-top facet */}
+        <polygon points="296,130 210,63 242,130"
+          stroke="rgba(201,153,42,0.3)" strokeWidth="0.6" fill="rgba(201,153,42,0.03)"/>
+        {/* Right-bottom facet */}
+        <polygon points="296,130 242,130 210,197"
+          stroke="rgba(201,153,42,0.3)" strokeWidth="0.6" fill="rgba(224,184,74,0.04)"/>
+        {/* Bottom star facet */}
+        <polygon points="150,336 210,197 150,222 90,197"
+          stroke="rgba(201,153,42,0.3)" strokeWidth="0.6" fill="rgba(201,153,42,0.04)"/>
+        {/* Left-bottom facet */}
+        <polygon points="4,130 90,197 58,130"
+          stroke="rgba(201,153,42,0.3)" strokeWidth="0.6" fill="rgba(201,153,42,0.03)"/>
+        {/* Left-top facet */}
+        <polygon points="4,130 58,130 90,63"
+          stroke="rgba(201,153,42,0.3)" strokeWidth="0.6" fill="rgba(224,184,74,0.04)"/>
+        {/* Upper-left kite */}
+        <polygon points="150,4 4,130 90,63"
+          stroke="rgba(201,153,42,0.22)" strokeWidth="0.5" fill="rgba(201,153,42,0.015)"/>
+        {/* Upper-right kite */}
+        <polygon points="150,4 296,130 210,63"
+          stroke="rgba(201,153,42,0.22)" strokeWidth="0.5" fill="rgba(201,153,42,0.015)"/>
+        {/* Lower-left kite */}
+        <polygon points="150,336 4,130 90,197"
+          stroke="rgba(201,153,42,0.22)" strokeWidth="0.5" fill="rgba(201,153,42,0.015)"/>
+        {/* Lower-right kite */}
+        <polygon points="150,336 296,130 210,197"
+          stroke="rgba(201,153,42,0.22)" strokeWidth="0.5" fill="rgba(201,153,42,0.015)"/>
+        {/* Center light rays */}
+        <line x1="150" y1="38"  x2="150" y2="222" stroke="rgba(224,184,74,0.15)" strokeWidth="0.5"/>
+        <line x1="58"  y1="130" x2="242" y2="130" stroke="rgba(224,184,74,0.15)" strokeWidth="0.5"/>
+        <line x1="90"  y1="63"  x2="210" y2="197" stroke="rgba(201,153,42,0.1)"  strokeWidth="0.4"/>
+        <line x1="210" y1="63"  x2="90"  y2="197" stroke="rgba(201,153,42,0.1)"  strokeWidth="0.4"/>
+        {/* Center gem dot */}
+        <circle cx="150" cy="130" r="4" fill="rgba(255,215,80,0.5)"/>
+        <circle cx="150" cy="130" r="8" stroke="rgba(224,184,74,0.2)" strokeWidth="0.5" fill="none"/>
+        {/* Top sparkle star */}
+        <line x1="150" y1="-6"  x2="150" y2="16"  stroke="rgba(255,220,80,0.95)" strokeWidth="2"/>
+        <line x1="136" y1="4"   x2="164" y2="4"   stroke="rgba(255,220,80,0.95)" strokeWidth="2"/>
+        <line x1="142" y1="-3"  x2="158" y2="11"  stroke="rgba(255,220,80,0.55)" strokeWidth="1"/>
+        <line x1="158" y1="-3"  x2="142" y2="11"  stroke="rgba(255,220,80,0.55)" strokeWidth="1"/>
+        {/* Right sparkle */}
+        <line x1="304" y1="130" x2="288" y2="130" stroke="rgba(255,220,80,0.5)" strokeWidth="1.5"/>
+        <line x1="296" y1="122" x2="296" y2="138" stroke="rgba(255,220,80,0.5)" strokeWidth="1.5"/>
+        {/* Left sparkle */}
+        <line x1="-4"  y1="130" x2="12"  y2="130" stroke="rgba(255,220,80,0.4)" strokeWidth="1"/>
+        <line x1="4"   y1="122" x2="4"   y2="138" stroke="rgba(255,220,80,0.4)" strokeWidth="1"/>
+        {/* Bottom sparkle */}
+        <line x1="150" y1="344" x2="150" y2="328" stroke="rgba(255,220,80,0.4)" strokeWidth="1"/>
+        <line x1="142" y1="336" x2="158" y2="336" stroke="rgba(255,220,80,0.4)" strokeWidth="1"/>
+      </svg>
+    </div>
+  )
+}
+
 function ScatterDiamonds() {
   return (
     <div className="login-bg" aria-hidden="true">
       <div className="login-bg-radial" />
-      {/* Floating gems */}
+      <BigDiamondBg />
+      {/* Floating small gems */}
       <div className="gem gem-diamond gem-1" />
       <div className="gem gem-diamond gem-2" />
       <div className="gem gem-diamond gem-3" />
@@ -302,7 +371,7 @@ export default function Login() {
               )}
 
               <p className="login-note">
-                El acceso requiere autorización previa por el administrador.
+                Al registrarte recibirás un correo de confirmación. El administrador activará tu acceso.
               </p>
             </form>
           )}
