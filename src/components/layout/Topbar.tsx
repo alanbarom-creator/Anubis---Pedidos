@@ -23,9 +23,9 @@ export default function Topbar() {
   const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
 
-  async function handleSignOut() {
-    await signOut()
+  function handleSignOut() {
     navigate('/login')
+    signOut()
   }
 
   const rolLabel = perfil?.rol ? ROL_LABELS[perfil.rol] : ''
