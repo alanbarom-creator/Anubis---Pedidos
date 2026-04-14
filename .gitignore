@@ -27,3 +27,4 @@ dist-ssr
 .env
 .env.local
 .env.*.local
+.claude/skills/ui-ux-pro-max/scripts/__pycache__/
