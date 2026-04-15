@@ -46,24 +46,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   async function cargarPerfil(userId: string) {
-    const { data } = await supabase
-      .from('usuarios')
-      .select('*, sucursales(*)')
-      .eq('id', userId)
-      .single()
-    setPerfil(data ?? null)
+    try {
+      const { data } = await supabase
+        .from('usuarios')
+        .select('*, sucursales(*)')
+        .eq('id', userId)
+        .single()
+      setPerfil(data ?? null)
+    } catch {
+      setPerfil(null)
+    }
   }
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-      setUser(session?.user ?? null)
-      if (session?.user) {
-        cargarPerfil(session.user.id).finally(() => setLoading(false))
-      } else {
+    // Failsafe: si Supabase no responde en 7s, desbloquear la app
+    const failsafe = setTimeout(() => setLoading(false), 7000)
+
+    supabase.auth.getSession()
+      .then(({ data: { session } }) => {
+        clearTimeout(failsafe)
+        setSession(session)
+        setUser(session?.user ?? null)
+        if (session?.user) {
+          cargarPerfil(session.user.id).finally(() => setLoading(false))
+        } else {
+          setLoading(false)
+        }
+      })
+      .catch(() => {
+        clearTimeout(failsafe)
         setLoading(false)
-      }
-    })
+      })
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
@@ -74,10 +87,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } else {
           setPerfil(null)
         }
+        // Asegurar que loading quede false al cambiar estado de auth
+        setLoading(false)
       }
     )
 
-    return () => subscription.unsubscribe()
+    return () => {
+      clearTimeout(failsafe)
+      subscription.unsubscribe()
+    }
   }, [])
 
   async function signIn(email: string, password: string) {
