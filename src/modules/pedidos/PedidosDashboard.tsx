@@ -208,7 +208,7 @@ export default function PedidosDashboard() {
                   </thead>
                   <tbody>
                     {pedidosFiltrados.length === 0 ? (
-                      <tr><td colSpan={10} className="loading-row">Sin pedidos</td></tr>
+                      <tr><td colSpan={isSocioOrAdmin ? 11 : 10} className="loading-row">Sin pedidos</td></tr>
                     ) : (
                       pedidosFiltrados.map(p => {
                         const cfg = ESTATUS_CONFIG[p.estatus]

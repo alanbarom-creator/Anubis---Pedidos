@@ -368,41 +368,45 @@ function LotesCaptura({
     if (!form.fecha) return setError('La fecha es requerida.')
 
     setLoading(true)
-    const { error: err } = await supabase.from('lotes').insert({
-      fecha: form.fecha,
-      sucursal_id: form.sucursal_id || null,
-      vendedor_id: form.vendedor_id || null,
-      proveedor: form.proveedor || null,
-      oro: form.oro || null,
-      certificado: form.certificado || null,
-      tipo_piedra_central: form.tipo_piedra_central || null,
-      calidad: form.calidad || null,
-      ct_central: n(form.ct_central),
-      tipo_piedra_lateral: form.tipo_piedra_lateral || null,
-      ct_lateral: n(form.ct_lateral),
-      ctd_piedras: n(form.ctd_piedras),
-      puntos: n(form.puntos),
-      forma_corte: form.forma_corte || null,
-      origen: form.origen || null,
-      notas: form.notas || null,
-      categoria: form.categoria || null,
-      codigo: form.codigo || null,
-      lote: form.lote || null,
-      folio: form.folio || null,
-      peso_oro: n(form.peso_oro),
-      precio_lista: n(form.precio_lista),
-      descuento: n(form.descuento),
-      precio_venta: n(form.precio_venta),
-      costo_piedra_central: canSeeCosts ? n(form.costo_piedra_central) : null,
-      costo_piedra_lateral: canSeeCosts ? n(form.costo_piedra_lateral) : null,
-      costo_oro: canSeeCosts ? n(form.costo_oro) : null,
-      costo_total: canSeeCosts ? n(form.costo_total) : null,
-      utilidad: canSeeCosts ? n(form.utilidad) : null,
-    })
-
-    if (err) setError(err.message)
-    else onSuccess()
-    setLoading(false)
+    try {
+      const { error: err } = await supabase.from('lotes').insert({
+        fecha: form.fecha,
+        sucursal_id: form.sucursal_id || null,
+        vendedor_id: form.vendedor_id || null,
+        proveedor: form.proveedor || null,
+        oro: form.oro || null,
+        certificado: form.certificado || null,
+        tipo_piedra_central: form.tipo_piedra_central || null,
+        calidad: form.calidad || null,
+        ct_central: n(form.ct_central),
+        tipo_piedra_lateral: form.tipo_piedra_lateral || null,
+        ct_lateral: n(form.ct_lateral),
+        ctd_piedras: n(form.ctd_piedras),
+        puntos: n(form.puntos),
+        forma_corte: form.forma_corte || null,
+        origen: form.origen || null,
+        notas: form.notas || null,
+        categoria: form.categoria || null,
+        codigo: form.codigo || null,
+        lote: form.lote || null,
+        folio: form.folio || null,
+        peso_oro: n(form.peso_oro),
+        precio_lista: n(form.precio_lista),
+        descuento: n(form.descuento),
+        precio_venta: n(form.precio_venta),
+        costo_piedra_central: canSeeCosts ? n(form.costo_piedra_central) : null,
+        costo_piedra_lateral: canSeeCosts ? n(form.costo_piedra_lateral) : null,
+        costo_oro: canSeeCosts ? n(form.costo_oro) : null,
+        costo_total: canSeeCosts ? n(form.costo_total) : null,
+        utilidad: canSeeCosts ? n(form.utilidad) : null,
+      })
+      if (err) setError(err.message)
+      else onSuccess()
+    } catch (e: any) {
+      setError(e?.message ?? 'Error desconocido al guardar.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (

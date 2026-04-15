@@ -32,7 +32,7 @@ export default function FinanzasDashboard() {
         <div>
           <h1 className="modulo-titulo">Finanzas</h1>
           <p className="modulo-subtitulo">
-            {rol === 'contador' ? 'Solo lectura' : 'Gestión de ingresos, egresos y traspasos'}
+            {rol === 'contador' ? 'Consulta de transacciones (solo lectura)' : 'Captura de ingresos, egresos y traspasos entre cuentas'}
           </p>
         </div>
         <div className="modulo-acciones">

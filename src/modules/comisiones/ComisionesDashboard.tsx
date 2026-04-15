@@ -97,17 +97,20 @@ export default function ComisionesDashboard() {
 
   async function actualizarPorcentaje(vendedorId: string, comisionId: string | null, pct: number) {
     setSaving(vendedorId)
-    if (comisionId) {
-      await supabase.from('comisiones_vendedor').update({ porcentaje: pct }).eq('id', comisionId)
-    } else {
-      await supabase.from('comisiones_vendedor').insert({
-        vendedor_id: vendedorId,
-        porcentaje: pct,
-        activo: true,
-      })
+    try {
+      if (comisionId) {
+        await supabase.from('comisiones_vendedor').update({ porcentaje: pct }).eq('id', comisionId)
+      } else {
+        await supabase.from('comisiones_vendedor').insert({
+          vendedor_id: vendedorId,
+          porcentaje: pct,
+          activo: true,
+        })
+      }
+      cargar()
+    } finally {
+      setSaving(null)
     }
-    setSaving(null)
-    cargar()
   }
 
   async function toggleVendedor(vendedorId: string, activo: boolean) {
@@ -266,37 +269,40 @@ function AgregarVendedorModal({ sucursales, onClose, onSuccess }: {
   async function guardar() {
     if (!nombre.trim() || !email.trim()) return setError('Nombre y correo son requeridos.')
     setLoading(true)
+    try {
+      // Agregar email autorizado para que pueda registrarse
+      const { error: err } = await supabase.from('email_autorizados').insert({
+        email: email.toLowerCase().trim(),
+        activo: true,
+        creado_por: null,
+      })
 
-    // Agregar email autorizado para que pueda registrarse
-    const { error: err } = await supabase.from('email_autorizados').insert({
-      email: email.toLowerCase().trim(),
-      activo: true,
-      creado_por: null,
-    })
+      if (err && !err.message.includes('duplicate') && !err.message.includes('unique')) {
+        setError(err.message)
+        return
+      }
 
-    if (err && !err.message.includes('duplicate')) {
-      setError(err.message)
+      // Si ya existe usuario, actualizar rol y sucursal
+      const { data: existing } = await supabase
+        .from('usuarios')
+        .select('id')
+        .eq('email', email.toLowerCase().trim())
+        .maybeSingle()
+
+      if (existing) {
+        await supabase.from('usuarios').update({
+          nombre: nombre.trim(),
+          rol,
+          sucursal_id: sucursalId || null,
+        }).eq('id', existing.id)
+      }
+
+      onSuccess()
+    } catch (e: any) {
+      setError(e?.message ?? 'Error al guardar.')
+    } finally {
       setLoading(false)
-      return
     }
-
-    // Si ya existe usuario, actualizar rol
-    const { data: existing } = await supabase
-      .from('usuarios')
-      .select('id')
-      .eq('email', email.toLowerCase().trim())
-      .maybeSingle()
-
-    if (existing) {
-      await supabase.from('usuarios').update({
-        nombre: nombre.trim(),
-        rol,
-        sucursal_id: sucursalId || null,
-      }).eq('id', existing.id)
-    }
-
-    onSuccess()
-    setLoading(false)
   }
 
   return (

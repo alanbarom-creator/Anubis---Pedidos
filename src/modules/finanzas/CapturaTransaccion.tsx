@@ -58,30 +58,35 @@ export default function CapturaTransaccion({ onSuccess }: Props) {
 
     setLoading(true)
 
-    const payload = {
-      tipo: form.tipo,
-      fecha: form.fecha,
-      monto: Number(form.monto),
-      moneda: form.moneda,
-      tipo_cambio: form.moneda === 'USD' ? Number(form.tipo_cambio) : null,
-      categoria_id: form.categoria_id || null,
-      descripcion: form.descripcion || null,
-      cuenta_id: form.cuenta_id,
-      sucursal_id: perfil?.sucursal_id ?? null,
-      capturado_por: perfil?.id ?? null,
-      aprobado: ['socio', 'administrador'].includes(perfil?.rol ?? '') ? true : false,
-    }
+    try {
+      const payload = {
+        tipo: form.tipo,
+        fecha: form.fecha,
+        monto: Number(form.monto),
+        moneda: form.moneda,
+        tipo_cambio: form.moneda === 'USD' ? Number(form.tipo_cambio) : null,
+        categoria_id: form.categoria_id || null,
+        descripcion: form.descripcion || null,
+        cuenta_id: form.cuenta_id,
+        sucursal_id: perfil?.sucursal_id ?? null,
+        capturado_por: perfil?.id ?? null,
+        aprobado: ['socio', 'administrador'].includes(perfil?.rol ?? '') ? true : false,
+      }
 
-    const { error } = await supabase.from('transacciones').insert(payload)
+      const { error } = await supabase.from('transacciones').insert(payload)
 
-    if (error) {
-      setError('Error al guardar: ' + error.message)
-    } else {
-      setExito(true)
-      setForm(prev => ({ ...prev, monto: '', descripcion: '', categoria_id: '', tipo_cambio: '' }))
-      onSuccess?.()
+      if (error) {
+        setError('Error al guardar: ' + error.message)
+      } else {
+        setExito(true)
+        setForm(prev => ({ ...prev, monto: '', descripcion: '', categoria_id: '', tipo_cambio: '' }))
+        onSuccess?.()
+      }
+    } catch (e: any) {
+      setError(e?.message ?? 'Error desconocido al guardar.')
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   return (
@@ -168,7 +173,7 @@ export default function CapturaTransaccion({ onSuccess }: Props) {
               value={form.categoria_id}
               onChange={e => set('categoria_id', e.target.value)}
             >
-              <option value="">Sin categoría</option>
+              <option value="">{categorias.length === 0 ? 'Sin categorías — agrega en Configuración' : 'Sin categoría'}</option>
               {categorias.map(c => (
                 <option key={c.id} value={c.id}>{c.nombre}</option>
               ))}
@@ -184,7 +189,9 @@ export default function CapturaTransaccion({ onSuccess }: Props) {
               onChange={e => set('cuenta_id', e.target.value)}
               required
             >
-              <option value="">Selecciona cuenta...</option>
+              <option value="">
+                {cuentas.length === 0 ? 'Sin cuentas — agrega en Configuración' : 'Selecciona cuenta...'}
+              </option>
               {cuentas
                 .filter(c => form.moneda === 'USD' ? c.moneda === 'USD' : c.moneda === 'MXN')
                 .map(c => (
@@ -195,6 +202,11 @@ export default function CapturaTransaccion({ onSuccess }: Props) {
                   </option>
                 ))}
             </select>
+            {cuentas.length === 0 && (
+              <p style={{ fontSize: 11, color: 'var(--warning)', marginTop: 4, lineHeight: 1.4 }}>
+                No hay cuentas configuradas. Ve a <strong>Configuración → Cuentas</strong> para agregar.
+              </p>
+            )}
           </div>
 
           {/* Descripción */}
