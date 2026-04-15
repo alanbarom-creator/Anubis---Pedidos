@@ -25,16 +25,20 @@ export type ModuloPermiso =
   | 'comisiones'
   | 'usuarios'
   | 'reportes'
+  | 'inicio'
+  | 'configuracion'
 
 const PERMISOS: Record<ModuloPermiso, RolUsuario[]> = {
-  finanzas:   ['socio', 'administrador', 'contador'],
-  inventario: ['socio', 'administrador', 'gerente', 'vendedor', 'contador'],
-  ventas:     ['socio', 'administrador', 'gerente', 'vendedor'],
-  pedidos:    ['socio', 'administrador', 'gerente', 'vendedor'],
-  lotes:      ['socio', 'administrador', 'gerente', 'vendedor'],
-  comisiones: ['socio', 'administrador'],
-  usuarios:   ['socio', 'administrador'],
-  reportes:   ['socio', 'administrador', 'contador'],
+  inicio:        ['socio', 'administrador', 'gerente', 'vendedor', 'contador'],
+  finanzas:      ['socio', 'administrador', 'contador'],
+  inventario:    ['socio', 'administrador', 'gerente', 'vendedor', 'contador'],
+  ventas:        ['socio', 'administrador', 'gerente', 'vendedor'],
+  pedidos:       ['socio', 'administrador', 'gerente', 'vendedor'],
+  lotes:         ['socio', 'administrador', 'gerente', 'vendedor'],
+  comisiones:    ['socio', 'administrador'],
+  usuarios:      ['socio', 'administrador'],
+  reportes:      ['socio', 'administrador', 'contador'],
+  configuracion: ['socio', 'administrador'],
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)

@@ -106,6 +106,7 @@ export interface Pedido {
   tipo_cliente: string | null
   descripcion: string | null
   peso: number | null
+  oro: string | null
   estatus: EstatusPedido
   sucursal_id: string | null
   capturado_por: string | null

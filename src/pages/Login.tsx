@@ -182,9 +182,10 @@ export default function Login() {
 
   const [mode, setMode] = useState<Mode>('login')
 
-  // Login state
-  const [email, setEmail] = useState('')
+  // Login state — pre-fill from localStorage if remember was on
+  const [email, setEmail] = useState(() => localStorage.getItem('rememberEmail') ?? '')
   const [password, setPassword] = useState('')
+  const [remember, setRemember] = useState(() => !!localStorage.getItem('rememberEmail'))
 
   // Register state
   const [regNombre, setRegNombre] = useState('')
@@ -240,7 +241,12 @@ export default function Login() {
       setError(error.includes('Invalid login credentials') ? 'Correo o contraseña incorrectos.' : error)
       setLoading(false)
     } else {
-      navigate('/finanzas')
+      if (remember) {
+        localStorage.setItem('rememberEmail', email)
+      } else {
+        localStorage.removeItem('rememberEmail')
+      }
+      navigate('/inicio')
     }
   }
 
@@ -331,6 +337,15 @@ export default function Login() {
                   autoComplete="current-password"
                 />
               </div>
+
+              <label className="login-remember">
+                <input
+                  type="checkbox"
+                  checked={remember}
+                  onChange={e => setRemember(e.target.checked)}
+                />
+                <span className="login-remember-label">Recuérdame</span>
+              </label>
 
               {error && (
                 <div className="login-error" role="alert">

@@ -1,14 +1,11 @@
 import { useState, useCallback } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
-import { useKPIs, useTodasCuentas, useSucursales, useTodasCategorias } from './useFinanzas'
+import { useKPIs, useTodasCuentas } from './useFinanzas'
 import KPICard from './KPICard'
 import SaldoCuentas from './SaldoCuentas'
 import GraficaTransacciones from './GraficaTransacciones'
 import TransaccionesTable from './TransaccionesTable'
 import CapturaTransaccion from './CapturaTransaccion'
-import AdminCuentas from './AdminCuentas'
-import AdminSucursales from './AdminSucursales'
-import AdminCategorias from './AdminCategorias'
 import Traspasos from './Traspasos'
 
 type Vista = 'dashboard' | 'captura' | 'traspasos'
@@ -17,13 +14,8 @@ export default function FinanzasDashboard() {
   const { rol, isSocioOrAdmin } = useAuth()
   const { kpis, loading, recargar } = useKPIs()
   const { cuentas, recargar: recargarCuentas } = useTodasCuentas()
-  const { sucursales, recargar: recargarSucursales } = useSucursales()
-  const { categorias, recargar: recargarCategorias } = useTodasCategorias()
 
   const [vista, setVista] = useState<Vista>('dashboard')
-  const [modalCuentas, setModalCuentas] = useState(false)
-  const [modalSucursales, setModalSucursales] = useState(false)
-  const [modalCategorias, setModalCategorias] = useState(false)
 
   const puedeCapturar = rol !== 'contador'
 
@@ -65,19 +57,6 @@ export default function FinanzasDashboard() {
             >
               Traspasos
             </button>
-          )}
-          {isSocioOrAdmin && (
-            <>
-              <button className="btn-secondary btn-sm" onClick={() => setModalCuentas(true)}>
-                Cuentas
-              </button>
-              <button className="btn-secondary btn-sm" onClick={() => setModalSucursales(true)}>
-                Sucursales
-              </button>
-              <button className="btn-secondary btn-sm" onClick={() => setModalCategorias(true)}>
-                Categorías
-              </button>
-            </>
           )}
           <button className="btn-icon" onClick={() => { recargar(); recargarCuentas() }} title="Recargar">
             <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -125,29 +104,6 @@ export default function FinanzasDashboard() {
       {/* Traspasos */}
       {vista === 'traspasos' && isSocioOrAdmin && (
         <Traspasos cuentas={cuentas.filter(c => c.activo)} />
-      )}
-
-      {/* Modales */}
-      {modalCuentas && (
-        <AdminCuentas
-          cuentas={cuentas}
-          onClose={() => setModalCuentas(false)}
-          onRefresh={recargarCuentas}
-        />
-      )}
-      {modalSucursales && (
-        <AdminSucursales
-          sucursales={sucursales}
-          onClose={() => setModalSucursales(false)}
-          onRefresh={recargarSucursales}
-        />
-      )}
-      {modalCategorias && (
-        <AdminCategorias
-          categorias={categorias}
-          onClose={() => setModalCategorias(false)}
-          onRefresh={recargarCategorias}
-        />
       )}
     </div>
   )

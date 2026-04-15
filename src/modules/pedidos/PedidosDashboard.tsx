@@ -198,6 +198,7 @@ export default function PedidosDashboard() {
                       <th className="tabla-th">Cliente</th>
                       <th className="tabla-th">Tipo</th>
                       <th className="tabla-th">Sucursal</th>
+                      <th className="tabla-th">Oro</th>
                       <th className="tabla-th">Entrega</th>
                       <th className="tabla-th">Peso</th>
                       <th className="tabla-th">Estatus</th>
@@ -219,6 +220,7 @@ export default function PedidosDashboard() {
                             <td className="tabla-celda">{p.cliente}</td>
                             <td className="tabla-celda"><span style={{ color: 'var(--text-muted)', fontSize: 12 }}>{p.tipo_cliente ?? '—'}</span></td>
                             <td className="tabla-celda">{p.sucursales?.nombre ?? '—'}</td>
+                            <td className="tabla-celda">{p.oro ?? '—'}</td>
                             <td className="tabla-celda">{p.fecha_entrega ? fmt(p.fecha_entrega) : '—'}</td>
                             <td className="tabla-celda">{p.peso ? `${p.peso}g` : '—'}</td>
                             <td className="tabla-celda">
@@ -582,6 +584,7 @@ function CapturaPedido({
     tipo_cliente: '',
     descripcion: '',
     peso: '',
+    oro: '',
     sucursal_id: perfil?.sucursal_id ?? '',
     notas: '',
   })
@@ -593,30 +596,37 @@ function CapturaPedido({
     setError(null)
   }
 
+  // UUID v4 check — only pass real UUID sucursal_id
+  const isUUID = (s: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s)
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     if (!form.folio.trim()) return setError('El folio es requerido.')
     if (!form.cliente.trim()) return setError('El nombre del cliente es requerido.')
-    if (!form.sucursal_id) return setError('Selecciona una sucursal.')
 
     setLoading(true)
-    const { error: err } = await supabase.from('pedidos').insert({
-      folio: form.folio.trim(),
-      fecha: form.fecha,
-      fecha_entrega: form.fecha_entrega || null,
-      cliente: form.cliente.trim(),
-      tipo_cliente: form.tipo_cliente || null,
-      descripcion: form.descripcion || null,
-      peso: form.peso ? Number(form.peso) : null,
-      sucursal_id: form.sucursal_id || null,
-      capturado_por: perfil?.id ?? null,
-      estatus: 'recibido',
-      notas: form.notas || null,
-    })
-
-    if (err) setError(err.message)
-    else onSuccess()
-    setLoading(false)
+    try {
+      const { error: err } = await supabase.from('pedidos').insert({
+        folio: form.folio.trim(),
+        fecha: form.fecha,
+        fecha_entrega: form.fecha_entrega || null,
+        cliente: form.cliente.trim(),
+        tipo_cliente: form.tipo_cliente || null,
+        descripcion: form.descripcion || null,
+        peso: form.peso ? Number(form.peso) : null,
+        oro: form.oro || null,
+        sucursal_id: isUUID(form.sucursal_id) ? form.sucursal_id : null,
+        capturado_por: perfil?.id ?? null,
+        estatus: 'recibido',
+        notas: form.notas || null,
+      })
+      if (err) setError(err.message)
+      else onSuccess()
+    } catch (e: any) {
+      setError(e?.message ?? 'Error desconocido al guardar.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -661,14 +671,28 @@ function CapturaPedido({
               onChange={e => set('fecha_entrega', e.target.value)} />
           </div>
           <div className="field-group">
-            <label className="field-label">Sucursal *</label>
+            <label className="field-label">Sucursal</label>
             <select className="field-input" value={form.sucursal_id}
-              onChange={e => set('sucursal_id', e.target.value)} required>
+              onChange={e => set('sucursal_id', e.target.value)}>
               <option value="">Selecciona sucursal...</option>
               {sucursales.length > 0
                 ? sucursales.map(s => <option key={s.id} value={s.id}>{s.nombre}</option>)
                 : SUCURSALES_DEFAULT.map(n => <option key={n} value={n}>{n}</option>)
               }
+            </select>
+          </div>
+          <div className="field-group">
+            <label className="field-label">Oro / Metal</label>
+            <select className="field-input" value={form.oro}
+              onChange={e => set('oro', e.target.value)}>
+              <option value="">Selecciona...</option>
+              <option value="10k">Oro 10k</option>
+              <option value="14k">Oro 14k</option>
+              <option value="18k">Oro 18k</option>
+              <option value="Platino">Platino</option>
+              <option value="Plata">Plata</option>
+              <option value="Acero">Acero</option>
+              <option value="Otro">Otro</option>
             </select>
           </div>
           <div className="field-group">

@@ -1,8 +1,14 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth, type ModuloPermiso } from '../../contexts/AuthContext'
 
 // SVG Icons
 const Icons = {
+  inicio: (
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 9.5L10 3l7 6.5"/>
+      <path d="M5 8v8h4v-4h2v4h4V8"/>
+    </svg>
+  ),
   finanzas: (
     <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
       <rect x="2" y="5" width="16" height="12" rx="2"/>
@@ -48,6 +54,12 @@ const Icons = {
       <circle cx="15" cy="6" r="2"/>
     </svg>
   ),
+  configuracion: (
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="10" cy="10" r="2.5"/>
+      <path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.2 4.2l1.4 1.4M14.4 14.4l1.4 1.4M4.2 15.8l1.4-1.4M14.4 5.6l1.4-1.4"/>
+    </svg>
+  ),
   diamond: (
     <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
       <path d="M10 2L18 8L14 18H6L2 8L10 2Z"/>
@@ -65,17 +77,20 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { to: '/finanzas',    label: 'Finanzas',    icon: 'finanzas',   modulo: 'finanzas'   },
-  { to: '/pedidos',     label: 'Pedidos',     icon: 'pedidos',    modulo: 'pedidos'    },
-  { to: '/lotes',       label: 'Lotes',       icon: 'lotes',      modulo: 'lotes'      },
-  { to: '/inventario',  label: 'Inventario',  icon: 'inventario', modulo: 'inventario' },
-  { to: '/comisiones',  label: 'Comisiones',  icon: 'comisiones', modulo: 'comisiones', soloSocioAdmin: true },
-  { to: '/reportes',    label: 'Reportes',    icon: 'reportes',   modulo: 'reportes',   soloSocioAdmin: true },
-  { to: '/usuarios',    label: 'Usuarios',    icon: 'usuarios',   modulo: 'usuarios',   soloSocioAdmin: true },
+  { to: '/inicio',        label: 'Inicio',        icon: 'inicio',        modulo: 'inicio'        },
+  { to: '/finanzas',      label: 'Finanzas',      icon: 'finanzas',      modulo: 'finanzas'      },
+  { to: '/pedidos',       label: 'Pedidos',       icon: 'pedidos',       modulo: 'pedidos'       },
+  { to: '/lotes',         label: 'Lotes',         icon: 'lotes',         modulo: 'lotes'         },
+  { to: '/inventario',    label: 'Inventario',    icon: 'inventario',    modulo: 'inventario'    },
+  { to: '/comisiones',    label: 'Comisiones',    icon: 'comisiones',    modulo: 'comisiones',    soloSocioAdmin: true },
+  { to: '/reportes',      label: 'Reportes',      icon: 'reportes',      modulo: 'reportes',      soloSocioAdmin: true },
+  { to: '/usuarios',      label: 'Usuarios',      icon: 'usuarios',      modulo: 'usuarios',      soloSocioAdmin: true },
+  { to: '/configuracion', label: 'Configuración', icon: 'configuracion', modulo: 'configuracion', soloSocioAdmin: true },
 ]
 
 export default function Sidebar() {
   const { canAccess, perfil, isSocioOrAdmin } = useAuth()
+  const navigate = useNavigate()
 
   const itemsVisibles = NAV_ITEMS.filter(item => {
     if (!canAccess(item.modulo)) return false
@@ -85,8 +100,8 @@ export default function Sidebar() {
 
   return (
     <aside className="sidebar">
-      {/* Brand */}
-      <div className="sidebar-brand">
+      {/* Brand — click to go home */}
+      <div className="sidebar-brand" onClick={() => navigate('/inicio')} style={{ cursor: 'pointer' }} title="Ir a Inicio">
         <div className="sidebar-logo">
           {Icons.diamond}
         </div>
